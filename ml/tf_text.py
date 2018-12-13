@@ -148,35 +148,55 @@ import numpy as np
 # print(len(vocab_dict))
 
 
-import tensorflow as tf
-from tensorflow.contrib import rnn
+# import tensorflow as tf
+# from tensorflow.contrib import rnn
 
-tf.reset_default_graph()
-# 创建输入数据
-X = np.random.randn(2, 4, 5)# 批次 、序列长度、样本维度
+# tf.reset_default_graph()
+# # 创建输入数据
+# X = np.random.randn(2, 4, 5)# 批次 、序列长度、样本维度
+#
+# # 第二个样本长度为3
+# X[1,2:] = 0
+#
+# print(X)
+#
+# def lenth(sequences):
+#     used = tf.sign(tf.reduce_max(tf.abs(sequences), reduction_indices=2))
+#     seq_len = tf.reduce_sum(used, reduction_indices=1)
+#     return tf.cast(seq_len, tf.int32)
+#
+#
+# GRU_cell_fw = rnn.GRUCell(3)
+# GRU_cell_bw = rnn.GRUCell(3)
+# ((fw_out, bw_out), (_,_)) = tf.nn.bidirectional_dynamic_rnn(cell_fw=GRU_cell_fw,
+#                                                             cell_bw=GRU_cell_bw,
+#                                                             inputs=X,
+#                                                             sequence_length=lenth(X),
+#                                                             dtype=tf.float64)
+# outputs = tf.concat((fw_out, bw_out), axis=2)
+#
+# sess = tf.InteractiveSession()
+# sess.run(tf.global_variables_initializer())
+#
+# out=sess.run([outputs])
+# print(out)
 
-# 第二个样本长度为3
-X[1,2:] = 0
+# tf.reset_default_graph()
+# # 创建输入数据
+# X = np.random.randn(2, 4, 5)# 批次 、序列长度、样本维度
+#
+# # 第二个样本长度为3
+# X[1,2:] = 0
+#
+# print(X)
+#
+#
+# outputs = tf.pow(X, 2)
+#
+# sess = tf.InteractiveSession()
+# sess.run(tf.global_variables_initializer())
+#
+# out=sess.run([outputs])
+# print(out)
 
-print(X)
-
-def lenth(sequences):
-    used = tf.sign(tf.reduce_max(tf.abs(sequences), reduction_indices=2))
-    seq_len = tf.reduce_sum(used, reduction_indices=1)
-    return tf.cast(seq_len, tf.int32)
-
-
-GRU_cell_fw = rnn.GRUCell(3)
-GRU_cell_bw = rnn.GRUCell(3)
-((fw_out, bw_out), (_,_)) = tf.nn.bidirectional_dynamic_rnn(cell_fw=GRU_cell_fw,
-                                                            cell_bw=GRU_cell_bw,
-                                                            inputs=X,
-                                                            sequence_length=lenth(X),
-                                                            dtype=tf.float64)
-outputs = tf.concat((fw_out, bw_out), axis=2)
-
-sess = tf.InteractiveSession()
-sess.run(tf.global_variables_initializer())
-
-out=sess.run([outputs])
-print(out)
+print('.'.join(['a']))

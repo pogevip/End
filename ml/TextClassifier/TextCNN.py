@@ -5,7 +5,7 @@ from tensorflow.contrib import layers
 
 
 class TextCNN():
-    def __init__(self, max_sequence_lenth, vocab_size, embedding_size, class_num, filter_sizes, filter_num, l2_reg=0.0):
+    def __init__(self, max_sequence_lenth, vocab_size, embedding_size, class_num, filter_sizes, filter_num, l2_reg=0.0, loss_alpha=0.25, loss_gama=2):
         self.max_sequence_lenth = max_sequence_lenth
         self.vocab_size = vocab_size
         self.embedding_size = embedding_size
@@ -27,8 +27,10 @@ class TextCNN():
 
         # Calculate mean cross-entropy loss
         with tf.name_scope("loss"):
-            losses = tf.nn.softmax_cross_entropy_with_logits(logits=out, labels=self.input_y)
-            self.loss = tf.reduce_mean(losses) + l2_reg * self.l2_loss
+            loss = -tf.reduce_mean(self.input_y * self.loss_alpha *
+                                        tf.pow((1 - tf.clip_by_value(out, 1e-10, 1.0)), self.loss_gama) *
+                                        tf.log(tf.clip_by_value(out, 1e-10, 1.0)))
+            self.loss = loss + l2_reg * self.l2_loss
 
         # Accuracy
         with tf.name_scope("accuracy"):

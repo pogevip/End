@@ -11,26 +11,65 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="TfidfFilter.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Filter/TfidfFilter.py">
+      <file leaf-file-name="HAN_train.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TextClassifier/HAN_train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="27">
-              <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+            <state relative-caret-position="-1451">
+              <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
               <folding>
-                <element signature="e#15#24#0" expanded="true" />
+                <element signature="e#6006#6690#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TextCNN_train.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/TextClassifier/TextCNN_train.py">
+      <file leaf-file-name="HAN.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TextClassifier/HAN.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3859">
-              <caret line="173" column="35" lean-forward="false" selection-start-line="173" selection-start-column="35" selection-end-line="173" selection-end-column="35" />
+            <state relative-caret-position="1242">
+              <caret line="48" column="0" lean-forward="true" selection-start-line="45" selection-start-column="24" selection-end-line="48" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HAN_gen_tfrecord.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TextClassifier/HAN_gen_tfrecord.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="286">
+              <caret line="20" column="30" lean-forward="false" selection-start-line="20" selection-start-column="30" selection-end-line="20" selection-end-column="30" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TextCNN.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TextClassifier/TextCNN.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="810">
+              <caret line="31" column="30" lean-forward="true" selection-start-line="31" selection-start-column="30" selection-end-line="31" selection-end-column="30" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TextCNN_gen_tfrecord.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TextClassifier/TextCNN_gen_tfrecord.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="130">
+              <caret line="64" column="37" lean-forward="false" selection-start-line="64" selection-start-column="22" selection-end-line="64" selection-end-column="37" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="gen_each_cls_case_tfidf.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/PrepareData/gen_each_cls_case_tfidf.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="378">
+              <caret line="14" column="0" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
               <folding>
-                <element signature="e#15#38#0" expanded="true" />
-                <element signature="e#6209#6866#0" expanded="false" />
+                <element signature="e#0#59#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -39,32 +78,15 @@
       <file leaf-file-name="get_train_data.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/PrepareData/get_train_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="318">
-              <caret line="134" column="24" lean-forward="true" selection-start-line="134" selection-start-column="24" selection-end-line="134" selection-end-column="24" />
+            <state relative-caret-position="249">
+              <caret line="33" column="32" lean-forward="false" selection-start-line="33" selection-start-column="32" selection-end-line="33" selection-end-column="32" />
               <folding>
-                <element signature="e#15#46#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="get_code_level.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/PrepareData/get_code_level.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="222">
-              <caret line="59" column="0" lean-forward="true" selection-start-line="59" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="segment.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/PrepareData/segment.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="243">
-              <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#32#0" expanded="true" />
+                <element signature="e#1158#2138#0" expanded="false" />
+                <element signature="e#2219#3434#0" expanded="false" />
+                <element signature="e#3531#4355#0" expanded="false" />
+                <element signature="e#4401#6615#0" expanded="false" />
+                <element signature="e#4489#4770#0" expanded="false" />
+                <element signature="e#6698#7432#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -73,12 +95,14 @@
       <file leaf-file-name="tf_text.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tf_text.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="56" column="87" lean-forward="true" selection-start-line="56" selection-start-column="87" selection-end-line="56" selection-end-column="87" />
+            <state relative-caret-position="322">
+              <caret line="201" column="22" lean-forward="true" selection-start-line="201" selection-start-column="22" selection-end-line="201" selection-end-column="22" />
               <folding>
                 <element signature="n#!!doc" expanded="false" />
+                <element signature="e#1848#1871#0" expanded="true" />
                 <element signature="e#1892#1965#0" expanded="false" />
                 <element signature="e#3737#3775#0" expanded="false" />
+                <element signature="e#5257#5283#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -116,18 +140,18 @@
         <option value="$PROJECT_DIR$/TextClassifier/FastText.py" />
         <option value="$PROJECT_DIR$/TextClassifier/HAN_train.py" />
         <option value="$PROJECT_DIR$/PrepareData/get_code_level.py" />
-        <option value="$PROJECT_DIR$/PrepareData/gen_each_cls_case_tfidf.py" />
-        <option value="$PROJECT_DIR$/tf_text.py" />
         <option value="$PROJECT_DIR$/Tfidf/TFIDF.py" />
         <option value="$PROJECT_DIR$/Filter/Tfidf_filter.py" />
         <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/PrepareData/test.py" />
-        <option value="$PROJECT_DIR$/TextClassifier/HAN.py" />
         <option value="$PROJECT_DIR$/Filter/TfidfFilter.py" />
         <option value="$PROJECT_DIR$/TextClassifier/TextCNN_train.py" />
-        <option value="$PROJECT_DIR$/TextClassifier/TextCNN.py" />
         <option value="$PROJECT_DIR$/PrepareData/all_info.py" />
         <option value="$PROJECT_DIR$/PrepareData/segment.py" />
+        <option value="$PROJECT_DIR$/TextClassifier/HAN.py" />
+        <option value="$PROJECT_DIR$/TextClassifier/TextCNN.py" />
+        <option value="$PROJECT_DIR$/PrepareData/gen_each_cls_case_tfidf.py" />
+        <option value="$PROJECT_DIR$/tf_text.py" />
         <option value="$PROJECT_DIR$/PrepareData/get_train_data.py" />
       </list>
     </option>
@@ -226,7 +250,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.all_info">
+  <component name="RunManager" selected="Python.tf_text">
     <configuration name="TextCNN" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -303,8 +327,8 @@
     </list>
     <recent_temporary>
       <list size="4">
-        <item index="0" class="java.lang.String" itemvalue="Python.all_info" />
-        <item index="1" class="java.lang.String" itemvalue="Python.tf_text" />
+        <item index="0" class="java.lang.String" itemvalue="Python.tf_text" />
+        <item index="1" class="java.lang.String" itemvalue="Python.all_info" />
         <item index="2" class="java.lang.String" itemvalue="Python.code_of_action" />
         <item index="3" class="java.lang.String" itemvalue="Python.TextCNN" />
       </list>
@@ -325,13 +349,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="877" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24964234" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24964234" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32097188" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32097188" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -351,7 +376,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="3" />
+      <option name="time" value="5" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -360,14 +385,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/data/stopWords.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="159">
-          <caret line="252" column="3" lean-forward="false" selection-start-line="252" selection-start-column="2" selection-end-line="252" selection-end-column="3" />
           <folding />
         </state>
       </provider>
@@ -390,31 +407,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TextClassifier/HAN_train.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="118">
-          <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-          <folding>
-            <element signature="e#6006#6690#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/PrepareData/code_of_action.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="123">
           <caret line="14" column="15" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="25" selection-end-column="46" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PrepareData/gen_each_cls_case_tfidf.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="322">
-          <caret line="28" column="40" lean-forward="true" selection-start-line="28" selection-start-column="40" selection-end-line="28" selection-end-column="40" />
-          <folding>
-            <element signature="e#0#59#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -434,40 +431,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TextClassifier/TextCNN_gen_tfrecord.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-69">
-          <caret line="15" column="42" lean-forward="false" selection-start-line="15" selection-start-column="33" selection-end-line="15" selection-end-column="42" />
-          <folding>
-            <element signature="e#15#51#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TextClassifier/HAN_gen_tfrecord.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3294">
-          <caret line="126" column="104" lean-forward="false" selection-start-line="126" selection-start-column="39" selection-end-line="126" selection-end-column="104" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TextClassifier/HAN.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="837">
-          <caret line="31" column="31" lean-forward="true" selection-start-line="31" selection-start-column="31" selection-end-line="31" selection-end-column="31" />
-          <folding>
-            <element signature="e#15#38#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Filter/TfidfFilter.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="27">
           <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
           <folding>
-            <element signature="e#15#24#0" expanded="true" />
+            <element signature="e#15#24#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -483,37 +452,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TextClassifier/TextCNN.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="523">
-          <caret line="55" column="38" lean-forward="true" selection-start-line="55" selection-start-column="38" selection-end-line="55" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TextClassifier/TextCNN_train.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3859">
-          <caret line="173" column="35" lean-forward="false" selection-start-line="173" selection-start-column="35" selection-end-line="173" selection-end-column="35" />
-          <folding>
-            <element signature="e#15#38#0" expanded="true" />
-            <element signature="e#6209#6866#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tf_text.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="56" column="87" lean-forward="true" selection-start-line="56" selection-start-column="87" selection-end-line="56" selection-end-column="87" />
-          <folding>
-            <element signature="n#!!doc" expanded="false" />
-            <element signature="e#1892#1965#0" expanded="false" />
-            <element signature="e#3737#3775#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/PrepareData/get_code_level.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="222">
@@ -522,22 +460,112 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/TextClassifier/HAN_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1451">
+          <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding>
+            <element signature="e#6006#6690#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/PrepareData/segment.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="243">
           <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
           <folding>
-            <element signature="e#0#32#0" expanded="true" />
+            <element signature="e#0#32#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TextClassifier/TextCNN_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3859">
+          <caret line="173" column="35" lean-forward="false" selection-start-line="173" selection-start-column="35" selection-end-line="173" selection-end-column="35" />
+          <folding>
+            <element signature="e#15#38#0" expanded="false" />
+            <element signature="e#6209#6866#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TextClassifier/TextCNN.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="810">
+          <caret line="31" column="30" lean-forward="true" selection-start-line="31" selection-start-column="30" selection-end-line="31" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TextClassifier/TextCNN_gen_tfrecord.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="130">
+          <caret line="64" column="37" lean-forward="false" selection-start-line="64" selection-start-column="22" selection-end-line="64" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/stopWords.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="78">
+          <caret line="204" column="2" lean-forward="true" selection-start-line="204" selection-start-column="2" selection-end-line="204" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TextClassifier/HAN.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1242">
+          <caret line="48" column="0" lean-forward="true" selection-start-line="45" selection-start-column="24" selection-end-line="48" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TextClassifier/HAN_gen_tfrecord.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="20" column="30" lean-forward="false" selection-start-line="20" selection-start-column="30" selection-end-line="20" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PrepareData/gen_each_cls_case_tfidf.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="378">
+          <caret line="14" column="0" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#59#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tf_text.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="322">
+          <caret line="201" column="22" lean-forward="true" selection-start-line="201" selection-start-column="22" selection-end-line="201" selection-end-column="22" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+            <element signature="e#1848#1871#0" expanded="true" />
+            <element signature="e#1892#1965#0" expanded="false" />
+            <element signature="e#3737#3775#0" expanded="false" />
+            <element signature="e#5257#5283#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/PrepareData/get_train_data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="318">
-          <caret line="134" column="24" lean-forward="true" selection-start-line="134" selection-start-column="24" selection-end-line="134" selection-end-column="24" />
+        <state relative-caret-position="249">
+          <caret line="33" column="32" lean-forward="false" selection-start-line="33" selection-start-column="32" selection-end-line="33" selection-end-column="32" />
           <folding>
-            <element signature="e#15#46#0" expanded="true" />
+            <element signature="e#1158#2138#0" expanded="false" />
+            <element signature="e#2219#3434#0" expanded="false" />
+            <element signature="e#3531#4355#0" expanded="false" />
+            <element signature="e#4401#6615#0" expanded="false" />
+            <element signature="e#4489#4770#0" expanded="false" />
+            <element signature="e#6698#7432#0" expanded="false" />
           </folding>
         </state>
       </provider>

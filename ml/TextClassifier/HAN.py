@@ -12,12 +12,14 @@ def lenth(sequences):
 
 
 class HAN():
-    def __init__(self, vocab_size, num_classes, embedding_size=200, hidden_size=50):
+    def __init__(self, vocab_size, num_classes, embedding_size=200, hidden_size=50, loss_alpha=0.25, loss_gama=2):
 
         self.vocab_size = vocab_size
         self.num_classes = num_classes
         self.embedding_size = embedding_size
         self.hidden_size = hidden_size
+        self.loss_alpha = loss_alpha
+        self.loss_gama = loss_gama
 
         with tf.name_scope('placeholder'):
             self.max_sentence_num = tf.placeholder(tf.int32, name='max_sentence_num')
@@ -36,11 +38,14 @@ class HAN():
 
 
         with tf.name_scope('loss'):
-            self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
-                labels=self.input_y,
-                logits=out,
-                name='loss'
-            ))
+            # self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
+            #     labels=self.input_y,
+            #     logits=out,
+            #     name='loss'
+            # ))
+            self.loss = -tf.reduce_mean(self.input_y * self.loss_alpha *
+                                        tf.pow((1 - tf.clip_by_value(out, 1e-10, 1.0)), self.loss_gama) *
+                                        tf.log(tf.clip_by_value(out, 1e-10, 1.0)))
 
         with tf.name_scope('accuracy'):
             predict = tf.argmax(out, axis=1, name='predict')
