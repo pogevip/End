@@ -2,14 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="29ac95af-1e5f-44be-a21f-0cfb20535e45" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ml/lawcase_db.ipynb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/ml/show_data.ipynb" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ml/.idea/workspace.xml" afterPath="$PROJECT_DIR$/ml/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ml/PrepareData/gen_each_cls_case_tfidf.py" afterPath="$PROJECT_DIR$/ml/PrepareData/gen_each_cls_case_tfidf.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ml/PrepareData/get_train_data.py" afterPath="$PROJECT_DIR$/ml/PrepareData/get_train_data.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ml/TextClassifier/HAN.py" afterPath="$PROJECT_DIR$/ml/TextClassifier/HAN.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ml/TextClassifier/TextCNN.py" afterPath="$PROJECT_DIR$/ml/TextClassifier/TextCNN.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ml/PrepareData/gen_train_data.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ml/TextClassifier/TfrecordGenerator.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ml/PrepareData/segment.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ml/TextClassifier/HAN_gen_tfrecord.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ml/TextClassifier/TextCNN_gen_tfrecord.py" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/ml/PrepareData/get_train_data.py" afterPath="$PROJECT_DIR$/ml/PrepareData/get_all_data.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ml/TextClassifier/FastText.py" afterPath="$PROJECT_DIR$/ml/TextClassifier/FastText.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ml/TextClassifier/HAN_train.py" afterPath="$PROJECT_DIR$/ml/TextClassifier/HAN_train.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ml/TextClassifier/TextCNN_train.py" afterPath="$PROJECT_DIR$/ml/TextClassifier/TextCNN_train.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ml/tf_text.py" afterPath="$PROJECT_DIR$/ml/tf_text.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -20,18 +22,96 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="get_train_data.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ml/PrepareData/get_train_data.py">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="TfrecordGenerator.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ml/TextClassifier/TfrecordGenerator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-4921">
-              <caret line="28" column="21" lean-forward="true" selection-start-line="28" selection-start-column="21" selection-end-line="28" selection-end-column="21" />
+            <state relative-caret-position="324">
+              <caret line="12" column="0" lean-forward="true" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+              <folding>
+                <element signature="e#16#55#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HAN_train.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ml/TextClassifier/HAN_train.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="280">
+              <caret line="66" column="40" lean-forward="false" selection-start-line="66" selection-start-column="40" selection-end-line="66" selection-end-column="40" />
+              <folding>
+                <element signature="e#15#38#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TextCNN_train.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ml/TextClassifier/TextCNN_train.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="263">
+              <caret line="62" column="27" lean-forward="true" selection-start-line="62" selection-start-column="27" selection-end-line="62" selection-end-column="27" />
+              <folding>
+                <element signature="e#15#38#0" expanded="true" />
+                <element signature="e#2025#2728#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="get_all_data.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ml/PrepareData/get_all_data.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="54">
+              <caret line="248" column="30" lean-forward="false" selection-start-line="248" selection-start-column="28" selection-end-line="248" selection-end-column="30" />
+              <folding>
+                <element signature="e#1158#2138#0" expanded="false" />
+                <element signature="e#2219#3434#0" expanded="false" />
+                <element signature="e#3531#4355#0" expanded="false" />
+                <element signature="e#4489#4770#0" expanded="false" />
+                <element signature="e#4887#5700#0" expanded="false" />
+                <element signature="e#5740#6006#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tf_text.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ml/tf_text.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="160">
+              <caret line="230" column="60" lean-forward="false" selection-start-line="230" selection-start-column="60" selection-end-line="230" selection-end-column="60" />
+              <folding>
+                <element signature="e#1848#1871#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FastText.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ml/TextClassifier/FastText.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1404">
+              <caret line="54" column="24" lean-forward="false" selection-start-line="54" selection-start-column="24" selection-end-line="54" selection-end-column="24" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>data</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -40,6 +120,16 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/ml/PrepareData/get_train_data.py" />
+        <option value="$PROJECT_DIR$/ml/TextClassifier/TextCNN_gen_tfrecord.py" />
+        <option value="$PROJECT_DIR$/ml/TextClassifier/HAN_gen_tfrecord.py" />
+        <option value="$PROJECT_DIR$/ml/TextClassifier/FastText.py" />
+        <option value="$PROJECT_DIR$/ml/TextClassifier/gen_tfrecord.py" />
+        <option value="$PROJECT_DIR$/ml/PrepareData/get_all_data.py" />
+        <option value="$PROJECT_DIR$/ml/PrepareData/gen_train_data.py" />
+        <option value="$PROJECT_DIR$/ml/TextClassifier/TextCNN_train.py" />
+        <option value="$PROJECT_DIR$/ml/TextClassifier/HAN_train.py" />
+        <option value="$PROJECT_DIR$/ml/tf_text.py" />
+        <option value="$PROJECT_DIR$/ml/TextClassifier/TfrecordGenerator.py" />
       </list>
     </option>
   </component>
@@ -66,7 +156,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -83,17 +173,30 @@
               <item name="End" type="b2602c69:ProjectViewProjectNode" />
               <item name="End" type="462c0819:PsiDirectoryNode" />
               <item name="ml" type="462c0819:PsiDirectoryNode" />
+              <item name="data" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="End" type="b2602c69:ProjectViewProjectNode" />
+              <item name="End" type="462c0819:PsiDirectoryNode" />
+              <item name="ml" type="462c0819:PsiDirectoryNode" />
               <item name="PrepareData" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="End" type="b2602c69:ProjectViewProjectNode" />
+              <item name="End" type="462c0819:PsiDirectoryNode" />
+              <item name="ml" type="462c0819:PsiDirectoryNode" />
+              <item name="TextClassifier" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file:///Users/wangxiao/Workspaces/End/ml/TextClassifier/HAN_gen_tfrecord.py" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -106,6 +209,30 @@
         </RuleState>
       </list>
     </option>
+  </component>
+  <component name="RunManager" selected="Python.tf_text">
+    <configuration name="tf_text" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ml" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="End" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ml/tf_text.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
+    <recent_temporary>
+      <list size="1">
+        <item index="0" class="java.lang.String" itemvalue="Python.tf_text" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
@@ -121,19 +248,19 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="877" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="877" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24964234" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2532189" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32097188" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32173914" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24964234" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -148,15 +275,136 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="2" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ml/PrepareData/get_train_data.py">
+    <entry file="file://$PROJECT_DIR$/ml/TextClassifier/TfrecordGenerator.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4921">
-          <caret line="28" column="21" lean-forward="true" selection-start-line="28" selection-start-column="21" selection-end-line="28" selection-end-column="21" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#16#55#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ml/TextClassifier/HAN_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1053">
+          <caret line="43" column="16" lean-forward="false" selection-start-line="43" selection-start-column="16" selection-end-line="43" selection-end-column="16" />
+          <folding>
+            <element signature="e#15#38#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ml/tf_text.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1647">
+          <caret line="113" column="72" lean-forward="true" selection-start-line="112" selection-start-column="0" selection-end-line="113" selection-end-column="72" />
+          <folding>
+            <element signature="e#1848#1871#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ml/TextClassifier/FastText.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1404">
+          <caret line="54" column="24" lean-forward="true" selection-start-line="54" selection-start-column="24" selection-end-line="54" selection-end-column="24" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ml/PrepareData/segment.py" />
+    <entry file="file://$PROJECT_DIR$/ml/PrepareData/get_code_level.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-570">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ml/TextClassifier/TextCNN_gen_tfrecord.py" />
+    <entry file="file://$PROJECT_DIR$/ml/TextClassifier/FastText.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1404">
+          <caret line="54" column="24" lean-forward="false" selection-start-line="54" selection-start-column="24" selection-end-line="54" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ml/PrepareData/get_all_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="248" column="30" lean-forward="false" selection-start-line="248" selection-start-column="28" selection-end-line="248" selection-end-column="30" />
+          <folding>
+            <element signature="e#1158#2138#0" expanded="false" />
+            <element signature="e#2219#3434#0" expanded="false" />
+            <element signature="e#3531#4355#0" expanded="false" />
+            <element signature="e#4489#4770#0" expanded="false" />
+            <element signature="e#4887#5700#0" expanded="false" />
+            <element signature="e#5740#6006#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ml/TextClassifier/HAN.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-205">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ml/PrepareData/gen_train_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1141">
+          <caret line="96" column="32" lean-forward="false" selection-start-line="96" selection-start-column="8" selection-end-line="96" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ml/TextClassifier/HAN_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="280">
+          <caret line="66" column="40" lean-forward="false" selection-start-line="66" selection-start-column="40" selection-end-line="66" selection-end-column="40" />
+          <folding>
+            <element signature="e#15#38#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ml/TextClassifier/TextCNN_train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="263">
+          <caret line="62" column="27" lean-forward="true" selection-start-line="62" selection-start-column="27" selection-end-line="62" selection-end-column="27" />
+          <folding>
+            <element signature="e#15#38#0" expanded="true" />
+            <element signature="e#2025#2728#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ml/tf_text.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="160">
+          <caret line="230" column="60" lean-forward="false" selection-start-line="230" selection-start-column="60" selection-end-line="230" selection-end-column="60" />
+          <folding>
+            <element signature="e#1848#1871#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ml/TextClassifier/TfrecordGenerator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="12" column="0" lean-forward="true" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding>
+            <element signature="e#16#55#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

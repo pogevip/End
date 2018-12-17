@@ -4,60 +4,42 @@ import random
 import fasttext
 
 
-
-def load_stop_words(path = 'data/stopWords.txt'):
-    stw = []
-    with open(path, 'r') as fp:
-        for line in fp:
-            stw.append(line.strip())
-    return stw
-
-stop_words = load_stop_words()
-stop_flags = ['']
-
-
-
-def preprocess_str(string, with_flag = True):
-    res = []
-    for wf in string.split(' '):
-        word, flag = wf.split('-')
-        if word not in stop_words:
-            if with_flag and flag not in stop_flags:
-                res.append(word)
-            else:
-                res.append(word)
-    return res
-
-
-
-def read_dataset(data_path):
+def read_dataset(data_path, option = 1):
     # Data Preparation
     # ==================================================
 
     # Load data
+
+    if option == 0:
+        text_col = 'common_token'
+    elif option == 1:
+        text_col = 'hard_token'
+    else:
+        raise ('option par error! (must be 0 or 1)')
+
     print("Loading data...")
     df = pd.read_csv(data_path)
-    data1 = df[df['tag'] == True]
-    data2 = df[df['tag'] == False]
+
+    train_data = df[df['train_val_test'] != 3]
+    test_data = df[df['train_val_test'] == 3]
 
     # Train set
-    x_train = [preprocess_str(x) for x in data1['text'].tolist()]
-    y_train = data1['label'].tolist()
+    x_train = [x.replace('。', ' ') for x in train_data[text_col].tolist()]
+    y_train = train_data['cls'].tolist()
 
     train_set = []
     for x, y in zip(x_train, y_train):
-        train_set.append("__lable__"+str(int(y))+" , " + " ".join(x))
+        train_set.append("__lable__" + str(int(y)) + " , " + x)
 
     # Test set
-    x_test = [preprocess_str(x) for x in data2['text'].tolist()]
-    y_test = data2['label'].tolist()
+    x_test = [x.replace('。', ' ') for x in test_data[text_col].tolist()]
+    y_test = test_data['cls'].tolist()
 
     test_set = []
     for x, y in zip(x_test, y_test):
-        test_set.append("__lable__" + str(int(y)) + " , " + " ".join(x))
+        test_set.append("__lable__" + str(int(y)) + " , " + x)
 
     return train_set, test_set
-
 
 
 def writeData(sentences, fileName):
@@ -71,6 +53,7 @@ def writeData(sentences, fileName):
 
 
 if __name__=="__main__":
+    path = ''
     data_file = r'data/data.csv'
 
     train_set_file = r'data/train_data/fasttext_train_data.txt'

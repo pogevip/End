@@ -150,27 +150,35 @@ class AllInfo():
             sentence_seged = map(lambda x: "{}/{}".format(x.word, x.flag), sentence_seged)
             return ' '.join(sentence_seged)
 
-        def clean_sen(sen, stop_words=stop_words, stop_flags_1=stop_flags1, stop_flags_2=stop_flags2):
-            common_res = []
-            hard_res = []
-            for item in sen.split('。/x'):
-                item = item.strip()
-                cr = []
-                hr = []
-                for x in item.split(' '):
+        def clean_sen(doc, stop_words=stop_words, stop_flags_1=stop_flags1, stop_flags_2=stop_flags2):
+            rough_res = []
+            rigour_res = []
+            for sent in doc.split('。/x'):
+                sent = sent.strip()
+                ro_r = []
+                ri_r = []
+                for x in sent.split(' '):
                     try:
                         word, flag = x.split('/')
                         if word not in stop_words and flag not in stop_flags1:
-                            cr.append(word)
+                            ro_r.append(word)
                             if flag not in stop_flags2:
-                                hr.append(word)
+                                ri_r.append(word)
                     except:
                         continue
-                if len(cr)>0:
-                    common_res.append(' '.join(cr))
-                if len(hr)>0:
-                    hard_res.append(' '.join(hr))
-            return '。'.join(common_res), '。'.join(hard_res)
+                if len(ro_r)>0:
+                    rough_res.append(' '.join(ro_r))
+                if len(ri_r)>0:
+                    rigour_res.append(' '.join(ri_r))
+            return '。'.join(rough_res), '。'.join(rigour_res)
+
+        def com_len(doc):
+            sents = doc.split('。')
+            sent_num = len(sents)
+            each_sent_len = list(map(lambda x: len(x.split(' ')), sents))
+            max_sentlen = max(each_sent_len)
+            doc_len = sum(each_sent_len)
+            return sent_num, max_sentlen, doc_len
 
         print('start segment...')
 
@@ -182,17 +190,26 @@ class AllInfo():
                 print(index)
 
             token = segment(row['text'])
-            common_res, hard_res = clean_sen(token)
+            rough_res, rigour_res = clean_sen(token)
+
+            sent_num1, max_sentlen1, doc_len1 = com_len(rough_res)
+            sent_num2, max_sentlen2, doc_len2 = com_len(rigour_res)
 
             buffer.append({
                 'id': row['id'],
                 'text': row['text'],
                 'token': token,
-                'common_cleaned' : common_res,
-                'hard_cleaned' : hard_res,
+                'rough_cleaned' : rough_res,
+                'rigour_cleaned' : rigour_res,
                 'is_fact': row['is_fact'],
                 'statute_code': str(int(row['statute_code'])),
-                'cls': row['cls']
+                'cls': row['cls'],
+                'sent_num_rough': sent_num1,
+                'max_sentlen_rough': max_sentlen1,
+                'doc_len_rough': doc_len1,
+                'sent_num_rigour': sent_num2,
+                'max_sentlen_rigour': max_sentlen2,
+                'doc_len_rigour': doc_len2,
             })
             if len(buffer) >= 20000:
                 col.insert_many(buffer)
@@ -214,13 +231,21 @@ class AllInfo():
             for item in col.find():
 
                 i += 1
-                if i % 5000 == 0:
+                if i % 50000 == 0:
                     print('case_code: ' + str(i))
 
-                all_info.append([item['id'], item['common_cleaned'], item['hard_cleaned'], item['is_fact'], item['statute_code'], item['cls']])
+                all_info.append([item['id'], item['rough_cleaned'], item['rigour_cleaned'],
+                                 item['is_fact'], item['statute_code'], item['cls'],
+                                 item['sent_num_rough'], item['max_sentlen_rough'], item['doc_len_rough'],
+                                 item['sent_num_rigour'], item['max_sentlen_rigour'], item['doc_len_rigour'],])
 
-            all_info = pd.DataFrame(all_info, columns=['id', 'common_token', 'hard_token', 'is_fact', 'statute_code', 'cls'])
+            all_info = pd.DataFrame(all_info, columns=['id', 'rough_token', 'rigour_token',
+                                                       'is_fact', 'statute_code', 'cls',
+                                                       'sent_num_rough', 'max_sentlen_rough', 'doc_len_rough',
+                                                       'sent_num_rigour', 'max_sentlen_rigour', 'doc_len_rigour',])
 
+            all_info.dropna(how='any', inplace=True)
+            print('all info length : {}'.format(str(len(all_info))))
             print('all_info to csv...')
             all_info.to_csv(all_info_path, index=0)
 

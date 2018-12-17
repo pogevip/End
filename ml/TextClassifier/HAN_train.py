@@ -2,10 +2,12 @@
 
 import os, time, pickle
 import tensorflow as tf
+import numpy as np
 
 from TextClassifier.HAN import HAN
 from TextClassifier.HAN_gen_tfrecord import TRAIN_DATA_PATH, DEV_DATA_PATH, VOCAB_DICT_PATH
 
+from PrepareData.gen_train_data import MAX_DOC_LEN_RIGOUR, MAX_SENT_LEN_RIGOUR, MAX_SENT_NUM_RIGOUR, MAX_DOC_LEN_ROUGH, MAX_SENT_LEN_ROUGH, MAX_SENT_NUM_ROUGH
 
 # Data loading params
 tf.flags.DEFINE_float("dev_sample_percentage", .1, "Percentage of the training data to use for validation")
@@ -28,8 +30,10 @@ tf.flags.DEFINE_float("learning_rate", 0.01, "learning rate (default: 0.01)")
 FLAGS = tf.flags.FLAGS
 
 
-with open('data/train_data/HAN_data_size.config', 'rb') as fp:
-    data_size_config = pickle.load(fp)
+
+class_num = 10
+max_sentence_length = MAX_SENT_LEN_ROUGH
+max_sentence_num = MAX_SENT_NUM_ROUGH
 
 
 def decode_from_tfrecord(filename_queue):
@@ -40,7 +44,7 @@ def decode_from_tfrecord(filename_queue):
                                            'label': tf.FixedLenFeature([], tf.int64),
                                            'input_raw': tf.FixedLenFeature([], tf.int64),
                                        })  # 取出包含input_raw和label的feature对象
-    input_raw = tf.reshape(features['input_raw'], [data_size_config['MAX_DOC_LEN'], data_size_config['MAX_SEN_LEN']])
+    input_raw = tf.reshape(features['input_raw'], [max_sentence_num, max_sentence_length])
     label = features['label']
     return input_raw, label
 
@@ -55,6 +59,8 @@ def batch_reader(filenames, batch_size, thread_count, num_epochs=None):
                                               capacity=capacity,
                                               min_after_dequeue=min_after_dequeue,
                                               num_threads=thread_count)
+    y_batch = (np.arange(class_num) == y_batch[:, None]).astype(np.int32)
+
     return x_batch, y_batch
 
 

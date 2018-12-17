@@ -107,7 +107,7 @@ import numpy as np
 # with tf.Session() as sess:
 #     print(sess.run(tf.reduce_max(tf.abs(l), reduction_indices=2)))
 
-import numpy as np
+# import numpy as np
 # from tensorflow.contrib import learn
 #
 # x_text = [['I love you', 'This must be boy', 'This is a a dog'],
@@ -115,9 +115,11 @@ import numpy as np
 #
 #
 # max_document_length = max([len(x) for x in x_text])
-# max_sentence_length = np.max([[len(x.split(' ')) for x in doc] for doc in x_text])
+# # max_sentence_length = np.max([[len(x.split(' ')) for x in doc] for doc in x_text])
+# max_sentence_length = 4
 #
 # tmp = np.array(x_text).reshape(-1)
+# print(tmp)
 #
 # ## Create the vocabularyprocessor object, setting the max lengh of the documents.
 # vocab_processor = learn.preprocessing.VocabularyProcessor(max_sentence_length)
@@ -126,10 +128,13 @@ import numpy as np
 # ## Transform the documents using the vocabulary.
 # res = []
 # for doc in x_text:
+#     print(doc)
 #     x = np.array(list(vocab_processor.fit_transform(doc)))
+#     print(x)
 #     res.append(np.pad(x, ((0, max_document_length-len(x)), (0,0)), 'constant'))
 # res = np.array(res)
 # print(res)
+# print(res.reshape([-1, 4*3]))
 #
 # ## Extract word:id mapping from the object.
 # vocab_dict = vocab_processor.vocabulary_._mapping
@@ -146,6 +151,23 @@ import numpy as np
 # print(vocab_dict)
 # print(len(vocab_processor.vocabulary_))
 # print(len(vocab_dict))
+#
+#
+# x_text2 = ['I love you This must be boy This is a a dog',
+#           'This is a cat hao high ou wo ai bei jing tian an men']
+#
+# max_document_length2 = max([len(x.split(' ')) for x in x_text2])
+#
+# tmp = np.array(x_text2)
+# print(tmp)
+#
+# ## Create the vocabularyprocessor object, setting the max lengh of the documents.
+# vocab_processor = learn.preprocessing.VocabularyProcessor(max_document_length2)
+# vocab_processor.fit(tmp)
+#
+# ## Transform the documents using the vocabulary.
+# x = np.array(list(vocab_processor.fit_transform(tmp)))
+# print(x)
 
 
 # import tensorflow as tf
@@ -199,4 +221,16 @@ import numpy as np
 # out=sess.run([outputs])
 # print(out)
 
-print('.'.join(['a']))
+import numpy
+import tensorflow as tf
+test_labels=[1,2,3,4,5,6,7]
+print(test_labels)
+adata=numpy.array(test_labels)
+print(adata)
+def make_one_hot(data1):
+    return (numpy.arange(10)==data1[:,None]).astype(np.int32)
+
+my_one_hot =make_one_hot(adata)
+
+print(numpy.arange(10)==adata[:,None])
+print(my_one_hot)

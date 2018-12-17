@@ -5,8 +5,11 @@ import os
 import time
 import pickle
 import datetime
+import numpy as np
 from TextClassifier.TextCNN import TextCNN
 from TextClassifier.TextCNN_gen_tfrecord import TRAIN_DATA_PATH, DEV_DATA_PATH, VOCAB_DICT_PATH
+
+
 # Parameters
 # ==================================================
 
@@ -28,6 +31,8 @@ tf.flags.DEFINE_integer("num_checkpoints", 5, "Number of checkpoints to store (d
 
 
 FLAGS = tf.flags.FLAGS
+
+class_num = 10
 
 
 def decode_from_tfrecord(filename_queue):
@@ -53,6 +58,8 @@ def batch_reader(filenames, batch_size, thread_count, num_epochs=None):
                                               capacity=capacity,
                                               min_after_dequeue=min_after_dequeue,
                                               num_threads=thread_count)
+    y_batch = (np.arange(class_num) == y_batch[:, None]).astype(tf.int32)
+
     return x_batch, y_batch
 
 
