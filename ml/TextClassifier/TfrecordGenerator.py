@@ -8,9 +8,17 @@ import pandas as pd
 import pickle
 import os
 
-from PrepareData.gen_train_data import MAX_SENT_NUM_ROUGH, MAX_SENT_LEN_ROUGH, MAX_DOC_LEN_ROUGH, \
-    MAX_SENT_NUM_RIGOUR, MAX_SENT_LEN_RIGOUR, MAX_DOC_LEN_RIGOUR
+# from PrepareData.gen_train_data import MAX_SENT_NUM_ROUGH, MAX_SENT_LEN_ROUGH, MAX_DOC_LEN_ROUGH, \
+#     MAX_SENT_NUM_RIGOUR, MAX_SENT_LEN_RIGOUR, MAX_DOC_LEN_RIGOUR
 
+
+MAX_SENT_NUM_ROUGH = 20
+MAX_SENT_LEN_ROUGH = 150
+MAX_DOC_LEN_ROUGH = 500
+
+MAX_SENT_NUM_RIGOUR = 20
+MAX_SENT_LEN_RIGOUR = 100
+MAX_DOC_LEN_RIGOUR = 400
 
 class TfrecordGenerator(object):
     __metaclass__ = ABCMeta
@@ -44,10 +52,11 @@ class TfrecordGenerator(object):
         self.val_data.dropna(how='any', inplace=True)
         self.test_data.dropna(how='any', inplace=True)
 
+        # del self.data
+
         print('load finished.')
         print('train/val/test = {}/{}/{}'.format(len(self.train_data), len(self.val_data), len(self.test_data)))
 
-        print('processing...')
 
     @abstractmethod
     def process_data(self):
@@ -75,8 +84,9 @@ class TfrecordGenerator(object):
 
         dir = os.path.join(path, self.name, tmp)
         if not os.path.exists(dir):
-            os.mkdir(dir)
+            os.makedirs(dir)
 
+        print('processing...')
         self.process_data()
 
         print('out cls_map...')
@@ -121,55 +131,78 @@ class HanTfrecordGenerator(TfrecordGenerator):
 
     def process_data(self):
         def helper(doc):
-            sents = filter(lambda x: len(x.strip())>0, doc.split('。'))
-            sents = map(lambda sent: list(filter(lambda x: len(x.strip())>0, sent.split(' '))), sents)
+            sents = map(lambda x: x.strip(), doc.split('。'))
+            sents = filter(lambda x: len(x) > 0, sents)
             return list(sents)
 
-        train_x_text = map(lambda x: helper(x), self.train_data[self.text_col].tolist())
+        print('train data')
+        # 训练集
+        train_x_text = list(map(lambda x: helper(x), self.train_data[self.text_col].tolist()))
 
         train_y = self.train_data['cls'].tolist()
+
+        # del self.train_data
 
         self.code2label = {}
         for index, item in enumerate(list(set(train_y))):
             self.code2label[item] = index
 
-        self.y_train = np.array(map(lambda x: self.code2label[x], train_y))
+        self.y_train = np.array(list(map(lambda x: self.code2label[x], train_y)))
 
+        print('val data')
         # 验证集
-        val_x_text = map(lambda x: helper(x), self.val_data[self.text_col].tolist())
+        val_x_text = list(map(lambda x: helper(x), self.val_data[self.text_col].tolist()))
 
-        self.y_val = np.array(map(lambda x: self.code2label[x], self.val_data['cls'].tolist()))
+        self.y_val = np.array(list(map(lambda x: self.code2label[x], self.val_data['cls'].tolist())))
 
+        # del self.val_data
+
+        print('vacab initial')
         # Build vocabulary
-        text_tmp = []
-        text_tmp.extend(train_x_text)
-        text_tmp.extend(val_x_text)
+        tmp = []
+        for doc in train_x_text:
+            tmp.extend(doc)
+        for doc in val_x_text:
+            tmp.extend(doc)
 
-        tmp = np.array(text_tmp).reshape(-1)
+        # del text_tmp
         self.vocab_processor = learn.preprocessing.VocabularyProcessor(self.max_sentence_length)  # 将每个文档都填充成最大长度，0填充
+        print('fit')
         self.vocab_processor.fit(tmp)
 
+        # del tmp
+
+        print('fit train data')
         x_train = []
         for doc in train_x_text:
             each_doc = np.array(list(self.vocab_processor.fit_transform(doc)))
             x_train.append(np.pad(each_doc, ((0, self.max_document_length - len(each_doc)), (0, 0)), 'constant'))
         self.x_train = np.array(x_train)
 
+        # del x_train
+
+        print('fit val data')
         x_val = []
         for doc in val_x_text:
             each_doc = np.array(list(self.vocab_processor.fit_transform(doc)))
             x_val.append(np.pad(each_doc, ((0, self.max_document_length - len(each_doc)), (0, 0)), 'constant'))
         self.x_val = np.array(x_val)
 
+        # del x_val
+
+        print('test data')
         # Test set
-        test_x_text = map(lambda x: helper(x), self.test_data[self.text_col].tolist())
+        test_x_text = list(map(lambda x: helper(x), self.test_data[self.text_col].tolist()))
+        print('fit test data')
         x_test = []
         for doc in test_x_text:
             each_doc = np.array(list(self.vocab_processor.fit_transform(doc)))
             x_test.append(np.pad(each_doc, ((0, self.max_document_length - len(each_doc)), (0, 0)), 'constant'))
         self.x_test = np.array(x_test)
 
-        self.y_test = np.array(map(lambda x: self.code2label[x], self.test_data['cls'].tolist()))
+        # del test_x_text, x_test
+
+        self.y_test = np.array(list(map(lambda x: self.code2label[x], self.test_data['cls'].tolist())))
 
         print("Vocabulary Size: {:d}".format(len(self.vocab_processor.vocabulary_)))
 
@@ -204,10 +237,11 @@ class TextCnnTfrecordGenerator(TfrecordGenerator):
     def process_data(self):
         def helper(doc):
             doc = doc.replace('。', ' ')
-            doc = filter(lambda x: len(x.strip())>0, doc.split(' '))
             return list(doc)
 
-        train_x_text = map(lambda x: helper(x), self.train_data[self.text_col].tolist())
+        print('train data')
+        # 训练集
+        train_x_text = list(map(lambda x: helper(x), self.train_data[self.text_col].tolist()))
 
         train_y = self.train_data['cls'].tolist()
 
@@ -215,30 +249,39 @@ class TextCnnTfrecordGenerator(TfrecordGenerator):
         for index, item in enumerate(list(set(train_y))):
             self.code2label[item] = index
 
-        self.y_train = np.array(map(lambda x: self.code2label[x], train_y))
+        self.y_train = np.array(list(map(lambda x: self.code2label[x], train_y)))
 
+        print('val data')
         # 验证集
-        val_x_text = map(lambda x: helper(x), self.val_data[self.text_col].tolist())
+        val_x_text = list(map(lambda x: helper(x), self.val_data[self.text_col].tolist()))
 
-        self.y_val = np.array(map(lambda x: self.code2label[x], self.val_data['cls'].tolist()))
+        self.y_val = np.array(list(map(lambda x: self.code2label[x], self.val_data['cls'].tolist())))
 
+        print('vacab initial')
         # Build vocabulary
         text_tmp = []
         text_tmp.extend(train_x_text)
         text_tmp.extend(val_x_text)
 
         self.vocab_processor = learn.preprocessing.VocabularyProcessor(self.max_document_length)  # 将每个文档都填充成最大长度，0填充
+        print('fit')
         self.vocab_processor.fit(text_tmp)
 
+        text_tmp.clear()
+
+        print('fit train data')
         self.x_train = np.array(list(self.vocab_processor.fit_transform(train_x_text)))
 
+        print('fit val data')
         self.x_val = np.array(list(self.vocab_processor.fit_transform(val_x_text)))
 
+        print('test data')
         # Test set
-        test_x_text = map(lambda x: helper(x), self.test_data[self.text_col].tolist())
+        test_x_text = list(map(lambda x: helper(x), self.test_data[self.text_col].tolist()))
+        print('fit test data')
         self.x_test = np.array(list(self.vocab_processor.fit_transform(test_x_text)))
 
-        self.y_test = np.array(map(lambda x: self.code2label[x], self.test_data['cls'].tolist()))
+        self.y_test = np.array(list(map(lambda x: self.code2label[x], self.test_data['cls'].tolist())))
 
         print("Vocabulary Size: {:d}".format(len(self.vocab_processor.vocabulary_)))
 
@@ -247,12 +290,22 @@ class TextCnnTfrecordGenerator(TfrecordGenerator):
 
 
 if __name__ == '__main__':
-    data_path = 'train_set/train_info.csv'
+    data_path = '../data/trainSet/train_info.csv'
 
     htg = HanTfrecordGenerator(data_path)
-    htg.preprocess_data()
-    htg.out(path='../data/train_data')
+    print('rough...')
+    htg.preprocess_data(option=0)
+    htg.out(path='../data/trainSet')
+    print('rigour...')
+    htg.preprocess_data(option=1)
+    htg.out(path='../data/trainSet')
 
-    tctg = TextCnnTfrecordGenerator(data_path)
-    tctg.preprocess_data()
-    tctg.out(path='../data/train_data')
+    # tctg = TextCnnTfrecordGenerator(data_path)
+    # print('rough...')
+    # tctg.preprocess_data(option=1)
+    # tctg.out(path='../data/trainSet')
+    # print('rigour...')
+    # tctg.preprocess_data(option=1)
+    # tctg.out(path='../data/trainSet')
+
+    print('finished!')

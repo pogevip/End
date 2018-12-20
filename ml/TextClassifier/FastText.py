@@ -1,7 +1,7 @@
 # coding:utf-8
 import pandas as pd
 import random
-import fasttext
+# import fasttext
 
 
 def read_dataset(data_path, option = 1):
@@ -11,14 +11,16 @@ def read_dataset(data_path, option = 1):
     # Load data
 
     if option == 0:
-        text_col = 'common_token'
+        text_col = 'rough_token'
     elif option == 1:
-        text_col = 'hard_token'
+        text_col = 'rigour_token'
     else:
         raise ('option par error! (must be 0 or 1)')
 
     print("Loading data...")
     df = pd.read_csv(data_path)
+
+    df.dropna(how='any', inplace=True)
 
     train_data = df[df['train_val_test'] != 3]
     test_data = df[df['train_val_test'] == 3]
@@ -53,22 +55,23 @@ def writeData(sentences, fileName):
 
 
 if __name__=="__main__":
-    path = ''
-    data_file = r'data/data.csv'
+    data_file = r'../data/trainSet/train_info_5w.csv'
 
-    train_set_file = r'data/train_data/fasttext_train_data.txt'
-    test_set_file = r'data/train_data/fasttext_test_data.txt'
+    train_set_file = r'../data/trainSet/fastText/trainData.txt'
+    test_set_file = r'../data/trainSet/fastText/testData.txt'
 
     train_set, test_set = read_dataset(data_file)
     writeData(train_set, train_set_file)
     writeData(test_set, test_set_file)
 
-    classifier=fasttext.supervised(train_set_file,'model/Fasttext_classifier.model',lable_prefix='__lable__')
-    result = classifier.test(test_set_file)
-    print("P@1:",result.precision)    #准确率
-    print("R@2:",result.recall)    #召回率
-    print("Number of examples:",result.nexamples)    #预测错的例子
+    # classifier=fasttext.supervised(train_set_file,'model/Fasttext_classifier.model',lable_prefix='__lable__')
+    # result = classifier.test(test_set_file)
+    # print("P@1:",result.precision)    #准确率
+    # print("R@2:",result.recall)    #召回率
+    # print("Number of examples:",result.nexamples)    #预测错的例子
 
+
+    ################################3
     # #实际预测
     # lable_to_cate={1:'technology'.1:'car',3:'entertainment',4:'military',5:'sports'}
     #

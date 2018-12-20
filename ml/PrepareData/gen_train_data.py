@@ -4,13 +4,13 @@ import pandas as pd
 import random
 
 
-MAX_SENT_NUM_ROUGH = 30
-MAX_SENT_LEN_ROUGH = 200
-MAX_DOC_LEN_ROUGH = 700
+MAX_SENT_NUM_ROUGH = 20
+MAX_SENT_LEN_ROUGH = 150
+MAX_DOC_LEN_ROUGH = 500
 
-MAX_SENT_NUM_RIGOUR = 30
-MAX_SENT_LEN_RIGOUR = 170
-MAX_DOC_LEN_RIGOUR = 500
+MAX_SENT_NUM_RIGOUR = 20
+MAX_SENT_LEN_RIGOUR = 100
+MAX_DOC_LEN_RIGOUR = 400
 
 
 class TrainData():
@@ -32,7 +32,7 @@ class TrainData():
                                                 'cls', 'is_gen'])
 
 
-    def sample(self, base_line = 100000):
+    def sample(self, base_line = 50000):
         #对少数数据进行采样
 
         def random_delete_word(word, threshold=0.15):
@@ -130,6 +130,6 @@ if __name__ == '__main__':
     td.split_train_val_test_set()
 
     print('out...')
-    td.output_to_csv('../data/trainSet/train_info.csv')
+    td.output_to_csv('../data/trainSet/train_info_5w.csv')
 
     print('finished!')
