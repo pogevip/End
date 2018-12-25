@@ -8,8 +8,7 @@ from collections import defaultdict
 
 
 
-
-class TfrecordGenerator(object):
+class TrainDataGenerator(object):
     __metaclass__ = ABCMeta
 
     def __init__(self, name, src_path):
@@ -131,9 +130,9 @@ class TfrecordGenerator(object):
             pickle.dump((self.x_test, self.y_test), fp)
 
 
-class HanTfrecordGenerator(TfrecordGenerator):
+class HanTrainDataGenerator(TrainDataGenerator):
     def __init__(self, src_path):
-        TfrecordGenerator.__init__(self, 'Han', src_path)
+        TrainDataGenerator.__init__(self, 'Han', src_path)
 
         print('Han start...')
 
@@ -149,7 +148,7 @@ class HanTfrecordGenerator(TfrecordGenerator):
 
         self.data = self.df.loc[:, [self.text_col, 'cls', 'train_val_test']]
 
-        TfrecordGenerator.preprocess_data(self)
+        TrainDataGenerator.preprocess_data(self)
 
 
     def process_text(self, doc):
@@ -163,10 +162,10 @@ class HanTfrecordGenerator(TfrecordGenerator):
 
 
 
-class TextCnnTfrecordGenerator(TfrecordGenerator):
+class TextCnnTrainDataGenerator(TrainDataGenerator):
     def __init__(self, src_path):
 
-        TfrecordGenerator.__init__(self, 'TextCnn', src_path)
+        TrainDataGenerator.__init__(self, 'TextCnn', src_path)
 
         print('TextCnn start...')
 
@@ -182,7 +181,7 @@ class TextCnnTfrecordGenerator(TfrecordGenerator):
 
         self.data = self.df.loc[:, [self.text_col, 'cls', 'train_val_test']]
 
-        TfrecordGenerator.preprocess_data(self)
+        TrainDataGenerator.preprocess_data(self)
 
 
     def process_text(self, doc):
@@ -194,24 +193,24 @@ class TextCnnTfrecordGenerator(TfrecordGenerator):
 if __name__ == '__main__':
     data_path = '../data/trainSet/train_info_5w.csv'
 
-    htg = HanTfrecordGenerator(data_path)
+    htg = HanTrainDataGenerator(data_path)
     print('rough...')
     htg.preprocess_data(option=0)
-    htg.get_dict('../data/trainSet/vacb.dic')
+    htg.get_dict('../data/trainSet/vacab.dic')
     htg.out(path='../data/trainSet')
     print('rigour...')
     htg.preprocess_data(option=1)
-    htg.get_dict('../data/trainSet/vacb.dic')
+    htg.get_dict('../data/trainSet/vacab.dic')
     htg.out(path='../data/trainSet')
 
-    tctg = TextCnnTfrecordGenerator(data_path)
+    tctg = TextCnnTrainDataGenerator(data_path)
     print('rough...')
     tctg.preprocess_data(option=0)
-    tctg.get_dict('../data/trainSet/vacb.dic')
+    tctg.get_dict('../data/trainSet/vacab.dic')
     tctg.out(path='../data/trainSet')
     print('rigour...')
     tctg.preprocess_data(option=1)
-    tctg.get_dict('../data/trainSet/vacb.dic')
+    tctg.get_dict('../data/trainSet/vacab.dic')
     tctg.out(path='../data/trainSet')
 
     print('finished!')

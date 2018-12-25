@@ -3,15 +3,16 @@
 import os, time, pickle
 import tensorflow as tf
 import numpy as np
+import random
 
 from TextClassifier.HAN import HAN
-from TextClassifier.HAN_gen_tfrecord import TRAIN_DATA_PATH, DEV_DATA_PATH, VOCAB_DICT_PATH
 
-from PrepareData.gen_train_data import MAX_DOC_LEN_RIGOUR, MAX_SENT_LEN_RIGOUR, MAX_SENT_NUM_RIGOUR, MAX_DOC_LEN_ROUGH, MAX_SENT_LEN_ROUGH, MAX_SENT_NUM_ROUGH
+from TextClassifier.data_helper import stuff_doc, gen_one_hot, read_data
+
 
 # Data loading params
 tf.flags.DEFINE_float("dev_sample_percentage", .1, "Percentage of the training data to use for validation")
-tf.flags.DEFINE_string("data_dir", "data/data.dat", "data directory")
+tf.flags.DEFINE_string("data_dir", "../data/trainSet/Han", "data directory")
 
 # Model Hyperparameters
 tf.flags.DEFINE_integer("embedding_size", 200, "Dimensionality of character embedding (default: 200)")
@@ -29,45 +30,44 @@ tf.flags.DEFINE_float("learning_rate", 0.01, "learning rate (default: 0.01)")
 
 FLAGS = tf.flags.FLAGS
 
+data_option = 0
 
 
-class_num = 10
-max_sentence_length = MAX_SENT_LEN_ROUGH
-max_sentence_num = MAX_SENT_NUM_ROUGH
+def batch_iter(x, y, batch_size, num_epochs, shuffle=True):
+    data_size = len(x)
+    num_batches_per_epoch = int((data_size-1)/batch_size) + 1
+    for epoch in range(num_epochs):
+        if shuffle:
+            shuffle_indices = list(range(data_size))
+            random.shuffle(shuffle_indices)
 
+            shuffled_x = [x[i] for i in shuffle_indices]
+            shuffled_y = [y[i] for i in shuffle_indices]
+        else:
+            shuffled_x = x
+            shuffled_y = y
 
-def decode_from_tfrecord(filename_queue):
-    reader = tf.TFRecordReader()
-    _, serialized_example = reader.read(filename_queue)  # 返回文件名和文件
-    features = tf.parse_single_example(serialized_example,
-                                       features={
-                                           'label': tf.FixedLenFeature([], tf.int64),
-                                           'input_raw': tf.FixedLenFeature([], tf.int64),
-                                       })  # 取出包含input_raw和label的feature对象
-    input_raw = tf.reshape(features['input_raw'], [max_sentence_num, max_sentence_length])
-    label = features['label']
-    return input_raw, label
+        for batch_num in range(num_batches_per_epoch):
+            start_index = batch_num * batch_size
+            end_index = min((batch_num + 1) * batch_size, data_size)
 
+            train_x_tmp = shuffled_x[start_index:end_index]
+            train_y_tmp = shuffled_y[start_index:end_index]
 
-def batch_reader(filenames, batch_size, thread_count, num_epochs=None):
-    filename_queue = tf.train.string_input_producer(filenames, num_epochs=num_epochs, shuffle=True)
-    input_raw, label = decode_from_tfrecord(filename_queue)
-    min_after_dequeue = 1000
-    capacity = min_after_dequeue + thread_count * batch_size
-    x_batch, y_batch = tf.train.shuffle_batch([input_raw, label],
-                                              batch_size=batch_size,
-                                              capacity=capacity,
-                                              min_after_dequeue=min_after_dequeue,
-                                              num_threads=thread_count)
-    y_batch = (np.arange(class_num) == y_batch[:, None]).astype(np.int32)
+            train_x = np.array(list(map(lambda doc: stuff_doc(doc, model_option=0, data_option=data_option), train_x_tmp)))
+            train_y = gen_one_hot(train_y_tmp)
 
-    return x_batch, y_batch
+            yield train_x, train_y
 
 
 def train(train_file_path, dev_file_path, vocab_dic_path):
 
     # get all dev data
-    dev_x, dev_y = decode_from_tfrecord(dev_file_path)
+    dev_x, dev_y = read_data(dev_file_path)
+    dev_x = np.array(list(map(lambda doc: stuff_doc(doc), dev_x)))
+    dev_y = gen_one_hot(dev_y)
+
+    train_x, train_y = read_data(train_file_path)
 
     # get vocab size
     with open(vocab_dic_path, 'rb') as fp:
@@ -120,7 +120,6 @@ def train(train_file_path, dev_file_path, vocab_dic_path):
             os.makedirs(checkpoint_dir)
         saver = tf.train.Saver(tf.global_variables(), max_to_keep=FLAGS.num_checkpoints)
 
-        train_x, train_y = batch_reader([train_file_path], FLAGS.batch_size, 3)
 
         # Initialize all variables
         sess.run(tf.global_variables_initializer())
@@ -157,30 +156,31 @@ def train(train_file_path, dev_file_path, vocab_dic_path):
             if writer:
                 writer.add_summary(summaries, step)
 
-        coord = tf.train.Coordinator()
-        threads = tf.train.start_queue_runners(sess=sess, coord=coord)
-        try:
-            for i in range(FLAGS.num_epochs):
-                x_batch, y_batch = sess.run([train_x, train_y])
-                train_step(x_batch, y_batch)
-                current_step = tf.train.global_step(sess, global_step)
-                if current_step % FLAGS.evaluate_every == 0:
-                    print("\nEvaluation:")
-                    dev_step(dev_x, dev_y, writer=dev_summary_writer)
-                    print("")
-                if current_step % FLAGS.checkpoint_every == 0:
-                    path = saver.save(sess, checkpoint_prefix, global_step=current_step)
-                    print("Saved model checkpoint to {}\n".format(path))
-        except tf.errors.OutOfRangeError:
-            print("Trainning finished!")
-        finally:
-            coord.request_stop()
-            coord.join(threads)
-            sess.close()
+        batches = batch_iter(train_x, train_y, FLAGS.batch_size, FLAGS.num_epochs)
+
+        for x_batch, y_batch in batches:
+            train_step(x_batch, y_batch)
+            current_step = tf.train.global_step(sess, global_step)
+            if current_step % FLAGS.evaluate_every == 0:
+                print("\nEvaluation:")
+                dev_step(dev_x, dev_y, writer=dev_summary_writer)
+                print("")
+            if current_step % FLAGS.checkpoint_every == 0:
+                path = saver.save(sess, checkpoint_prefix, global_step=current_step)
+                print("Saved model checkpoint to {}\n".format(path))
+
+        sess.close()
 
 
 def main(argv=None):
-    train(TRAIN_DATA_PATH, DEV_DATA_PATH, VOCAB_DICT_PATH)
+    if data_option == 0:
+        p = 'rough'
+    else:
+        p = 'rigour'
+    train_data_path = os.path.join(FLAGS.data_dir, p, 'train')
+    val_data_path = os.path.join(FLAGS.data_dir, p, 'val')
+    vacab_data_path = '../data/trainSet/vacab.dic'
+    train(train_data_path, val_data_path, vacab_data_path)
 
 
 
