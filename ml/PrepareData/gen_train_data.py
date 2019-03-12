@@ -2,34 +2,51 @@
 
 import pandas as pd
 import random
+from pymongo import MongoClient
+
+conn = MongoClient('172.19.241.248', 20000)
+col = conn['wangxiao']['alldata_final']
+
+MAX_DOC_LEN = 400
+
+stop_flags = ['b', 'c', 'e', 'g', 'h', 'k', 'l', 'o', 's', 'u', 'w', 'x', 'y', 'z', 'un', 'nr', 'ns',
+              'f', 'i', 'm', 'p', 'q', 'r', 'tg', 't']
 
 
-MAX_SENT_NUM_ROUGH = 20
-MAX_SENT_LEN_ROUGH = 150
-MAX_DOC_LEN_ROUGH = 500
+def gen_data_to_csv(path):
+    res = []
+    index = 0
+    demo = col.find(no_cursor_timeout=True)
+    for item in demo:
+        try:
+            token = item['token']
+            token = [x.split('/') for x in token.split(' ')]
+            token = filter(lambda x: x[1] not in stop_flags, token)
+            token = [x[0] for x in token]
+        except:
+            continue
 
-MAX_SENT_NUM_RIGOUR = 20
-MAX_SENT_LEN_RIGOUR = 100
-MAX_DOC_LEN_RIGOUR = 400
+        if len(token) >= 400:
+            continue
+        else:
+            res.append([item['fullTextId'], ' '.join(token), item['cls']])
+
+        if index % 10000 == 0:
+            print(index)
+        index += 1
+    demo.close()
+
+    res = pd.DataFrame(res, columns=['id', 'token', 'cls'])
+    res.dropna(how='any', inplace=True)
+    res.to_csv(path, index=0)
+    print('finished!')
 
 
 class TrainData():
     def __init__(self, src_path):
-        self.all_info = pd.read_csv(src_path)
-        self.all_info.dropna(how='any', inplace=True)
-
-        self.all_info = self.all_info[(self.all_info['sent_num_rough'] <= MAX_SENT_NUM_ROUGH) &
-                                      (self.all_info['max_sentlen_rough'] <= MAX_SENT_LEN_ROUGH) &
-                                      (self.all_info['doc_len_rough'] <= MAX_DOC_LEN_ROUGH) &
-                                      (self.all_info['sent_num_rigour'] <= MAX_SENT_NUM_RIGOUR) &
-                                      (self.all_info['max_sentlen_rigour'] <= MAX_SENT_LEN_RIGOUR) &
-                                      (self.all_info['doc_len_rigour'] <= MAX_DOC_LEN_RIGOUR)]
-
-        self.all_info['is_gen'] = 0
-        self.res = pd.DataFrame([], columns = ['rough_token', 'rigour_token',
-                                                'sent_num_rough', 'max_sentlen_rough', 'doc_len_rough',
-                                                'sent_num_rigour', 'max_sentlen_rigour', 'doc_len_rigour',
-                                                'cls', 'is_gen'])
+        self.data = pd.read_csv(src_path)
+        self.data['is_gen'] = 0
+        self.res = pd.DataFrame([], columns=['token', 'cls', 'is_gen'])
 
 
     def sample(self, base_line = 50000):
@@ -40,57 +57,30 @@ class TrainData():
                 return word
 
         def process_token(doc):
-            res = []
-            for sen in doc.split('。'):
-                sen = filter(lambda x: x, map(random_delete_word, sen.split(' ')))
-                res.append(' '.join(sen))
-            return '。'.join(res)
+            doc = list(filter(lambda x: x, map(random_delete_word, doc.split(' '))))
+            return ' '.join(doc)
 
-        def com_len(doc):
-            sents = doc.split('。')
-            sent_num = len(sents)
-            each_sent_len = list(map(lambda x: len(x.split(' ')), sents))
-            max_sentlen = max(each_sent_len)
-            doc_len = sum(each_sent_len)
-            return sent_num, max_sentlen, doc_len
 
-        for cls, group in self.all_info.groupby('cls'):
+        for cls, group in self.data.groupby('cls'):
             print(cls, len(group))
             if len(group)  < base_line:
                 buffer = []
                 multiple = int(base_line/len(group)+0.8)
                 for _, row in group.iterrows():
+                    buffer.append([row['token'], row['cls'], row['is_gen']])
                     for i in range(multiple):
+                        token = process_token(row['token'])
+                        buffer.append([token, row['cls'], 1])
 
-                        rough_token = process_token(row['rough_token'])
-                        rigour_token = process_token(row['rigour_token'])
+                df = pd.DataFrame(buffer, columns = ['token', 'cls', 'is_gen'])
 
-                        sent_num1, max_sentlen1, doc_len1 = com_len(rough_token)
-                        sent_num2, max_sentlen2, doc_len2 = com_len(rigour_token)
-
-                        buffer.append([rough_token, rigour_token,
-                                       sent_num1, max_sentlen1, doc_len1,
-                                       sent_num2, max_sentlen2, doc_len2,
-                                       row['cls'], 1])
-
-                df = pd.DataFrame(buffer, columns = ['rough_token', 'rigour_token',
-                                                     'sent_num_rough', 'max_sentlen_rough', 'doc_len_rough',
-                                                     'sent_num_rigour', 'max_sentlen_rigour', 'doc_len_rigour',
-                                                     'cls', 'is_gen'])
-
-                self.res = pd.concat([self.res, df], sort=True, ignore_index=True)
+                self.res = pd.concat([self.res, df], ignore_index=True)
             elif len(group) > base_line * 5:
                 tmp = group.sample(base_line * 5)
-                self.res = pd.concat([self.res, tmp], sort=True, ignore_index=True)
+                self.res = pd.concat([self.res, tmp], ignore_index=True)
             else:
-                self.res = pd.concat([self.res, group], sort=True, ignore_index=True)
+                self.res = pd.concat([self.res, group], ignore_index=True)
 
-
-
-        self.res = self.res.loc[:, ['rough_token', 'rigour_token',
-                                              'sent_num_rough', 'max_sentlen_rough', 'doc_len_rough',
-                                              'sent_num_rigour', 'max_sentlen_rigour', 'doc_len_rigour',
-                                              'cls', 'is_gen']]
         self.res['train_val_test'] = 1
 
 
@@ -114,20 +104,22 @@ class TrainData():
                 val_index = group.sample(max_num).index
                 self.res.loc[val_index, 'train_val_test'] = 2
 
-
     def output_to_csv(self, path):
         print('all info length: {}'.format(len(self.res)))
         self.res.to_csv(path, index=0)
 
+    def run(self):
+        self.sample()
+        self.split_train_val_test_set()
+
 
 if __name__ == '__main__':
-    td = TrainData('../data/all_info.csv')
+    gen_data_to_csv('../data/data.csv')
 
-    print('up sample...')
-    td.sample()
+    td = TrainData('../data/data.csv')
 
-    print('spliting...')
-    td.split_train_val_test_set()
+    print('process...')
+    td.run()
 
     print('out...')
     td.output_to_csv('../data/trainSet/train_info_5w.csv')

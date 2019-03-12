@@ -8,86 +8,86 @@ import datetime
 import numpy as np
 from TextClassifier.TextCNN import TextCNN
 import random
-from TextClassifier.data_helper import stuff_doc, gen_one_hot, read_data
-from TextClassifier.data_helper import MAX_DOC_LEN_ROUGH, MAX_DOC_LEN_RIGOUR
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(level = logging.INFO)
+handler = logging.FileHandler("word_text_cnn_train.txt", mode='w')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-# # Parameters
-# # ==================================================
-# tf.flags.DEFINE_string("data_dir", "../data/trainSet/TextCnn", "data directory")
-#
-# # Model Hyperparameters
-# tf.flags.DEFINE_integer("embedding_dim", 128, "Dimensionality of character embedding (default: 128)")
-# tf.flags.DEFINE_string("filter_sizes", "3,4,5", "Comma-separated filter sizes (default: '3,4,5')")
-# tf.flags.DEFINE_integer("num_filters", 128, "Number of filters per filter size (default: 128)")
-# tf.flags.DEFINE_float("dropout_keep_prob", 0.5, "Dropout keep probability (default: 0.5)")
-# tf.flags.DEFINE_float("l2_reg_lambda", 0.0, "L2 regularization lambda (default: 0.0)")
-#
-# # Training parameters
-# tf.flags.DEFINE_integer("batch_size", 256, "Batch Size (default: 64)")
-# tf.flags.DEFINE_integer("num_epochs", 50, "Number of training epochs (default: 200)")
-# tf.flags.DEFINE_integer("evaluate_every", 100, "Evaluate model on dev set after this many steps (default: 100)")
-# tf.flags.DEFINE_integer("checkpoint_every", 100, "Save model after this many steps (default: 100)")
-# tf.flags.DEFINE_integer("num_checkpoints", 5, "Number of checkpoints to store (default: 5)")
-#
-#
-# FLAGS = tf.flags.FLAGS
-#
-# data_dir = FLAGS.data_dir
-# embedding_dim = FLAGS.embedding_dim
-# filter_sizes = FLAGS.filter_sizes
-# num_filters = FLAGS.num_filters
-# dropout_keep_prob = FLAGS.dropout_keep_prob
-# l2_reg_lambda = FLAGS.l2_reg_lambda
-# batch_size = FLAGS.batch_size
-# num_epochs = FLAGS.num_epochs
-# evaluate_every = FLAGS.evaluate_every
-# checkpoint_every = FLAGS.checkpoint_every
-# num_checkpoints = FLAGS.num_checkpoints
 
-data_dir = "../data/trainSet/TextCnn"
+
+data_dir = "../data/trainSet/WordTextCnn"
 embedding_dim = 128
 filter_sizes = '3,4,5'
 num_filters = 128
 dropout_keep_prob = 0.5
 l2_reg_lambda = 0.2
-batch_size = 256
-num_epochs = 20
+BATCH_SIZE = 256
+NUM_EPOCHS = 10
 evaluate_every = 100
 checkpoint_every = 100
 num_checkpoints = 5
 
-data_option = 0
-p = 'rough' if data_option == 0 else 'rigour'
-max_sequence_lenth = MAX_DOC_LEN_ROUGH if data_option==0 else MAX_DOC_LEN_RIGOUR
+max_sequence_lenth = 2500
 
 
-def batch_iter(x, y, batch_size, num_epochs, shuffle=True):
-    data_size = len(x)
-    num_batches_per_epoch = int((data_size-1)/batch_size) + 1
-    for epoch in range(num_epochs):
-        if shuffle:
+class DataReader():
+    def __init__(self, path, batch_size=0, num_epochs=0):
+        with open(path, 'rb') as fp:
+            data = pickle.load(fp)
+        self.x = data[0]
+        self.y = data[1]
+        self.batch_size = batch_size
+        self.num_epochs = num_epochs
+
+    def __stuff_doc(self, doc, max_length=2500):
+        if len(doc) > max_length:
+            start_index = (len(doc) - max_length - 1) // 2 + 1
+            doc = doc[start_index: start_index + max_length]
+        else:
+            doc.extend([0] * (max_length - len(doc)))
+        return doc
+
+    def __gen_one_hot(self, label):
+        label = np.array(label)
+        return (np.arange(10) == label[:, None]).astype(np.int32)
+
+    def read_all(self):
+        x = np.array(list(map(lambda doc: self.__stuff_doc(doc), self.x)))
+        y = self.__gen_one_hot(self.y)
+        return x, y
+
+    def read(self):
+        data_size = len(self.x)
+        num_batches_per_epoch = int((data_size - 1) / self.batch_size) + 1
+
+        for epochs in range(self.num_epochs):
+            print('epoch:', epochs)
             shuffle_indices = list(range(data_size))
             random.shuffle(shuffle_indices)
 
-            shuffled_x = [x[i] for i in shuffle_indices]
-            shuffled_y = [y[i] for i in shuffle_indices]
-        else:
-            shuffled_x = x
-            shuffled_y = y
+            shuffled_x = [self.x[i] for i in shuffle_indices]
+            shuffled_y = [self.y[i] for i in shuffle_indices]
 
-        for batch_num in range(num_batches_per_epoch):
-            start_index = batch_num * batch_size
-            end_index = min((batch_num + 1) * batch_size, data_size)
+            for batch_num in range(num_batches_per_epoch):
+                start_index = batch_num * self.batch_size
+                end_index = min((batch_num + 1) * self.batch_size, data_size)
 
-            train_x_tmp = shuffled_x[start_index:end_index]
-            train_y_tmp = shuffled_y[start_index:end_index]
+                x_tmp = shuffled_x[start_index:end_index]
+                y_tmp = shuffled_y[start_index:end_index]
 
-            train_x = np.array(list(map(lambda doc: stuff_doc(doc, model_option=1, data_option=data_option), train_x_tmp)))
-            train_y = gen_one_hot(train_y_tmp)
+                x = np.array(list(map(lambda doc: self.__stuff_doc(doc), x_tmp)))
+                y = self.__gen_one_hot(y_tmp)
 
-            yield train_x, train_y
+                yield x, y
+
 
 
 def train(train_file_path, val_file_path, vocab_dic_path):
@@ -100,13 +100,11 @@ def train(train_file_path, val_file_path, vocab_dic_path):
         'loss' : [],
         'acc' : [],
     }
-    timestamp = None
 
-    dev_x, dev_y = read_data(val_file_path)
-    dev_x = np.array(list(map(lambda doc: stuff_doc(doc, model_option=1, data_option=data_option), dev_x)))
-    dev_y = gen_one_hot(dev_y)
+    val_reader = DataReader(val_file_path)
+    dev_x, dev_y = val_reader.read_all()
 
-    train_x, train_y = read_data(train_file_path)
+    train_reader = DataReader(train_file_path, batch_size=BATCH_SIZE, num_epochs=NUM_EPOCHS)
 
     # get vocab size
     with open(vocab_dic_path, 'rb') as fp:
@@ -127,7 +125,6 @@ def train(train_file_path, val_file_path, vocab_dic_path):
                 filter_num = num_filters,
                 l2_reg = l2_reg_lambda)
 
-
             # Define Training procedure
             global_step = tf.Variable(0, name="global_step", trainable=False)
             optimizer = tf.train.AdamOptimizer(1e-3)
@@ -146,10 +143,10 @@ def train(train_file_path, val_file_path, vocab_dic_path):
 
             # Output directory for models and summaries
             timestamp = str(int(time.time()))
-            out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs_TextCNN", p, timestamp))
+            out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs_WordTextCNN", timestamp))
             if not os.path.exists(out_dir):
                 os.makedirs(out_dir)
-            print("Writing to {}\n".format(out_dir))
+            logger.info("Writing to {}\n".format(out_dir))
 
             # Summaries for loss and accuracy
             loss_summary = tf.summary.scalar("loss", cnn.loss)
@@ -167,7 +164,7 @@ def train(train_file_path, val_file_path, vocab_dic_path):
 
             # Checkpoint directory. Tensorflow assumes this directory already exists so we need to create it
             checkpoint_dir = os.path.abspath(os.path.join(out_dir, "checkpoints"))
-            checkpoint_prefix = os.path.join(checkpoint_dir, "model_Text_CNN", p)
+            checkpoint_prefix = os.path.join(checkpoint_dir, "model_Word_Text_CNN")
             if not os.path.exists(checkpoint_dir):
                 os.makedirs(checkpoint_dir)
             saver = tf.train.Saver(tf.global_variables(), max_to_keep=num_checkpoints)
@@ -189,7 +186,7 @@ def train(train_file_path, val_file_path, vocab_dic_path):
                     [train_op, global_step, train_summary_op, cnn.loss, cnn.acc],
                     feed_dict)
                 time_str = datetime.datetime.now().isoformat()
-                print("{}: step {}, loss {:g}, acc {:g}".format(time_str, step, loss, accuracy))
+                logger.info("{}: step {}, loss {:g}, acc {:g}".format(time_str, step, loss, accuracy))
                 train_summary_writer.add_summary(summaries, step)
 
             def val_step(x_batch, y_batch, writer=None):
@@ -200,8 +197,8 @@ def train(train_file_path, val_file_path, vocab_dic_path):
                 batch_num = 1000
                 losses, accs = [], []
                 for batch_num in range(data_size // batch_num + 1):
-                    start_index = batch_num * batch_size
-                    end_index = min((batch_num + 1) * batch_size, data_size)
+                    start_index = batch_num * BATCH_SIZE
+                    end_index = min((batch_num + 1) * BATCH_SIZE, data_size)
 
                     x = x_batch[start_index:end_index]
                     y = y_batch[start_index:end_index]
@@ -228,26 +225,24 @@ def train(train_file_path, val_file_path, vocab_dic_path):
                 step, summaries, loss, acc = sess.run([global_step, dev_summary_op, val_loss, val_acc])
                 time_str = datetime.datetime.now().isoformat()
 
-                print("   {}: step {}, loss {:g}, acc {:g}".format(time_str, step, loss, acc))
+                logger.info("   {}: step {}, loss {:g}, acc {:g}".format(time_str, step, loss, acc))
                 if writer:
                     writer.add_summary(summaries, step)
                 val_res['acc'].append(acc)
                 val_res['loss'].append(loss)
 
-            batches = batch_iter(train_x, train_y, batch_size, num_epochs)
 
-            for x_batch, y_batch in batches:
+            for x_batch, y_batch in train_reader.read():
                 train_step(x_batch, y_batch)
                 current_step = tf.train.global_step(sess, global_step)
                 if current_step % evaluate_every == 0:
-                    print("\n-----------------\nEvaluation:\n-----------------")
+                    logger.info("\n-----------------\nEvaluation:\n-----------------")
                     val_step(dev_x, dev_y, writer=dev_summary_writer)
-                    print("")
                 if current_step % checkpoint_every == 0:
                     path = saver.save(sess, checkpoint_prefix, global_step=current_step)
-                    print("Saved model checkpoint to {}\n".format(path))
+                    logger.info("Saved model checkpoint to {}\n".format(path))
 
-    out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs_TextCNN", p, timestamp))
+    out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs_WordTextCNN", timestamp))
     with open(os.path.join(out_dir, 'val_res'),'wb') as fp:
         pickle.dump(val_res, fp)
 
@@ -255,12 +250,8 @@ def train(train_file_path, val_file_path, vocab_dic_path):
 
 
 def main(argv=None):
-    if data_option == 0:
-        p = 'rough'
-    else:
-        p = 'rigour'
-    train_data_path = os.path.join(data_dir, p, 'train')
-    val_data_path = os.path.join(data_dir, p, 'val')
+    train_data_path = os.path.join(data_dir, 'train')
+    val_data_path = os.path.join(data_dir, 'val')
     vacab_data_path = '../data/trainSet/vacab.dic'
     train(train_data_path, val_data_path, vacab_data_path)
 

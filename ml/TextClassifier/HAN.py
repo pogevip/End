@@ -12,19 +12,18 @@ def lenth(sequences):
 
 
 class HAN():
-    def __init__(self, vocab_size, num_classes, embedding_size=200, hidden_size=50, loss_alpha=0.25, loss_gama=2):
+    def __init__(self, vocab_size, num_classes, embedding_size=200, hidden_size=50, loss_alpha=0.25, loss_gamma=2):
 
         self.vocab_size = vocab_size
         self.num_classes = num_classes
         self.embedding_size = embedding_size
         self.hidden_size = hidden_size
         self.loss_alpha = loss_alpha
-        self.loss_gama = loss_gama
+        self.loss_gamma = loss_gamma
 
         with tf.name_scope('placeholder'):
             self.max_sentence_num = tf.placeholder(tf.int32, name='max_sentence_num')
             self.max_sentence_length = tf.placeholder(tf.int32, name='max_sentence_lenth')
-            self.batch_size = tf.placeholder(tf.int32, name='batch_size')
             # x的shape为[batch_size, 句子数， 句子长度(单词个数)]，但是每个样本的数据都不一样，，所以这里指定为空
             # y的shape为[batch_size, num_classes]
             self.input_x = tf.placeholder(tf.int32, [None, None, None], name='input_x')
@@ -43,8 +42,8 @@ class HAN():
             #     logits=out,
             #     name='loss'
             # ))
-            self.loss = -tf.reduce_mean(self.input_y * self.loss_alpha *
-                                        tf.pow((1 - tf.clip_by_value(out, 1e-10, 1.0)), self.loss_gama) *
+            self.loss = -tf.reduce_mean(tf.cast(self.input_y, tf.float32) * tf.cast(self.loss_alpha, tf.float32) *
+                                        tf.pow((1 - tf.clip_by_value(out, 1e-10, 1.0)), self.loss_gamma) *
                                         tf.log(tf.clip_by_value(out, 1e-10, 1.0)))
 
         with tf.name_scope('accuracy'):
@@ -90,7 +89,8 @@ class HAN():
     def __classifier(self, doc2vec):
         #最终的输出层，是一个全连接层
         with tf.name_scope('classifier'):
-            out = layers.fully_connected(inputs=doc2vec, num_outputs=self.num_classes, activation_fn=None, regularizer="L2")
+            out = layers.fully_connected(inputs=doc2vec, num_outputs=self.num_classes, activation_fn=None)
+            out = tf.nn.softmax(out)
         return out
 
 

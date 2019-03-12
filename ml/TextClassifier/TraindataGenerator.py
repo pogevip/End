@@ -185,7 +185,8 @@ class TextCnnTrainDataGenerator(TrainDataGenerator):
 
 
     def process_text(self, doc):
-        tmp = list(map(lambda x: self.vocab[x] if x in self.vocab else None, doc.replace('。', ' ').split(' ')))
+        tmp = map(lambda x: self.vocab[x] if x in self.vocab else None, doc.replace('。', ' ').split(' '))
+        tmp = list(filter(lambda x: x is not None, tmp))
         return tmp
 
 
@@ -196,21 +197,21 @@ if __name__ == '__main__':
     htg = HanTrainDataGenerator(data_path)
     print('rough...')
     htg.preprocess_data(option=0)
-    htg.get_dict('../data/trainSet/vacab.dic')
+    htg.get_dict('../data/trainSet/vocab.dic')
     htg.out(path='../data/trainSet')
     print('rigour...')
     htg.preprocess_data(option=1)
-    htg.get_dict('../data/trainSet/vacab.dic')
+    htg.get_dict('../data/trainSet/vocab.dic')
     htg.out(path='../data/trainSet')
 
     tctg = TextCnnTrainDataGenerator(data_path)
     print('rough...')
     tctg.preprocess_data(option=0)
-    tctg.get_dict('../data/trainSet/vacab.dic')
+    tctg.get_dict('../data/trainSet/vocab.dic')
     tctg.out(path='../data/trainSet')
     print('rigour...')
     tctg.preprocess_data(option=1)
-    tctg.get_dict('../data/trainSet/vacab.dic')
+    tctg.get_dict('../data/trainSet/vocab.dic')
     tctg.out(path='../data/trainSet')
 
     print('finished!')

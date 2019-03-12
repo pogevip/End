@@ -73,7 +73,7 @@ def main(path):
         tfidf_path = os.path.join(dir, 'tfidf.csv')
         dic_path = os.path.join(dir, 'dic.pkl')
 
-        print('     genetating tfidf and dic...')
+        print('     generating tfidf and dic...')
         tfidf_df, dic = gen_tfidf_and_dic_data(tmp)
 
         print('     writing dic')

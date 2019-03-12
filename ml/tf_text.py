@@ -224,15 +224,62 @@ import numpy as np
 # out=sess.run([outputs])
 # print(out)
 
-import numpy
-test_labels=[1,2,3,4,5,6,7]
-print(test_labels)
-adata=numpy.array(test_labels)
-print(adata)
-def make_one_hot(data1):
-    return (numpy.arange(10)==data1[:,None]).astype(np.int32)
+# import numpy
+# test_labels=[1,2,3,4,5,6,7]
+# print(test_labels)
+# adata=numpy.array(test_labels)
+# print(adata)
+# def make_one_hot(data1):
+#     return (numpy.arange(10)==data1[:,None]).astype(np.int32)
+#
+# my_one_hot =make_one_hot(adata)
+#
+# print(numpy.arange(10)==adata[:,None])
+# print(my_one_hot)
 
-my_one_hot =make_one_hot(adata)
+import tensorflow as tf
+import os
 
-print(numpy.arange(10)==adata[:,None])
-print(my_one_hot)
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+input_y = [
+    [1, 0, 0],
+    [0, 1, 0],
+    [1, 0, 0],
+    [0, 0, 1],
+    [0, 1, 0],
+    [1, 0, 0],
+    [0, 0, 1],
+    [0, 1, 0],
+    [1, 0, 0],
+    [0, 0, 1],
+]
+
+out = [
+    [0.25, 0.8, 0],
+    [0, 0.9, 0.3],
+    [0.5, 0, 0.6],
+    [0.3, 0, 0.7],
+    [0.2, 0.5, 0.4],
+    [0.3, 0.7, 0.1],
+    [0, 0.1, 0.55],
+    [0.1, 0.9, 0.1],
+    [0.35, 0.1, 0.01],
+    [0, 0.1, 0.98],
+]
+
+
+loss_alpha = tf.cast(0.25, tf.float32)
+loss_gamma = 2
+
+out = tf.nn.softmax(out)
+
+loss = -tf.reduce_mean(input_y * loss_alpha *
+                       tf.pow((1 - tf.clip_by_value(out, 1e-10, 1.0)), loss_gamma) *
+                       tf.log(tf.clip_by_value(out, 1e-10, 1.0)))
+
+sess = tf.InteractiveSession()
+sess.run(tf.global_variables_initializer())
+res = sess.run([loss])
+
+print(res)

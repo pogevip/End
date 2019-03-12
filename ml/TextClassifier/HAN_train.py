@@ -1,6 +1,6 @@
 #coding=utf-8
 
-import os, time, pickle
+import os, time, pickle, datetime
 import tensorflow as tf
 import numpy as np
 import random
@@ -8,29 +8,57 @@ import random
 from TextClassifier.HAN import HAN
 
 from TextClassifier.data_helper import stuff_doc, gen_one_hot, read_data
+from TextClassifier.data_helper import MAX_SENT_LEN_RIGOUR, MAX_SENT_NUM_RIGOUR, MAX_SENT_LEN_ROUGH, MAX_SENT_NUM_ROUGH
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
-# Data loading params
-tf.flags.DEFINE_float("dev_sample_percentage", .1, "Percentage of the training data to use for validation")
-tf.flags.DEFINE_string("data_dir", "../data/trainSet/Han", "data directory")
+# # Data loading params
+# tf.flags.DEFINE_string("data_dir", "../data/trainSet/Han", "data directory")
+#
+# # Model Hyperparameters
+# tf.flags.DEFINE_integer("embedding_dim", 200, "Dimensionality of character embedding (default: 200)")
+# tf.flags.DEFINE_integer("hidden_size", 50, "Dimensionality of GRU hidden layer (default: 50)")
+# tf.flags.DEFINE_float("grad_clip", 5, "grad clip to prevent gradient explode")
+#
+# # Training parameters
+# tf.flags.DEFINE_integer("batch_size", 256, "Batch Size (default: 64)")
+# tf.flags.DEFINE_integer("num_epochs", 100, "Number of training epochs (default: 50)")
+# tf.flags.DEFINE_integer("checkpoint_every", 100, "Save model after this many steps (default: 100)")
+# tf.flags.DEFINE_integer("num_checkpoints", 5, "Number of checkpoints to store (default: 5)")
+# tf.flags.DEFINE_integer("evaluate_every", 100, "evaluate every this many batches (default: 100)")
+# tf.flags.DEFINE_float("learning_rate", 0.01, "learning rate (default: 0.01)")
+#
+#
+# FLAGS = tf.flags.FLAGS
+#
+# data_dir = FLAGS.data_dir
+# embedding_dim = FLAGS.embedding_dim
+# hidden_size = FLAGS.hidden_size
+# grad_clip = FLAGS.grad_clip
+# batch_size = FLAGS.batch_size
+# num_epochs = FLAGS.num_epochs
+# evaluate_every = FLAGS.evaluate_every
+# checkpoint_every = FLAGS.checkpoint_every
+# num_checkpoints = FLAGS.num_checkpoints
+# learning_rate = FLAGS.learning_rate
 
-# Model Hyperparameters
-tf.flags.DEFINE_integer("embedding_size", 200, "Dimensionality of character embedding (default: 200)")
-tf.flags.DEFINE_integer("hidden_size", 50, "Dimensionality of GRU hidden layer (default: 50)")
-tf.flags.DEFINE_float("grad_clip", 5, "grad clip to prevent gradient explode")
-
-# Training parameters
-tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
-tf.flags.DEFINE_integer("num_epochs", 50, "Number of training epochs (default: 50)")
-tf.flags.DEFINE_integer("checkpoint_every", 100, "Save model after this many steps (default: 100)")
-tf.flags.DEFINE_integer("num_checkpoints", 5, "Number of checkpoints to store (default: 5)")
-tf.flags.DEFINE_integer("evaluate_every", 100, "evaluate every this many batches (default: 100)")
-tf.flags.DEFINE_float("learning_rate", 0.01, "learning rate (default: 0.01)")
-
-
-FLAGS = tf.flags.FLAGS
+data_dir = "../data/trainSet/Han"
+embedding_dim = 200
+hidden_size = 50
+grad_clip = 5
+batch_size = 256
+num_epochs = 100
+evaluate_every = 100
+checkpoint_every = 100
+num_checkpoints = 5
+learning_rate = 0.01
 
 data_option = 0
+
+p = 'rough' if data_option == 0 else 'rigour'
+max_sentence_length = MAX_SENT_LEN_ROUGH if data_option == 0 else MAX_SENT_LEN_RIGOUR
+max_sentence_num = MAX_SENT_NUM_ROUGH if data_option == 0 else MAX_SENT_NUM_RIGOUR
 
 
 def batch_iter(x, y, batch_size, num_epochs, shuffle=True):
@@ -60,14 +88,20 @@ def batch_iter(x, y, batch_size, num_epochs, shuffle=True):
             yield train_x, train_y
 
 
-def train(train_file_path, dev_file_path, vocab_dic_path):
+def train(train_file_path, val_file_path, vocab_dic_path):
 
     # get all dev data
-    dev_x, dev_y = read_data(dev_file_path)
-    dev_x = np.array(list(map(lambda doc: stuff_doc(doc), dev_x)))
+    dev_x, dev_y = read_data(val_file_path)
+    dev_x = np.array(list(map(lambda doc: stuff_doc(doc, model_option=0, data_option=data_option), dev_x)))
     dev_y = gen_one_hot(dev_y)
 
     train_x, train_y = read_data(train_file_path)
+
+    val_res = {
+        'loss': [],
+        'acc': [],
+    }
+    timestamp = None
 
     # get vocab size
     with open(vocab_dic_path, 'rb') as fp:
@@ -78,20 +112,22 @@ def train(train_file_path, dev_file_path, vocab_dic_path):
         han = HAN(
             vocab_size=vocab_size,
             num_classes=dev_y.shape[1],
-            embedding_size=FLAGS.embedding_size,
-            hidden_size=FLAGS.hidden_size)
+            embedding_size=embedding_dim,
+            hidden_size=hidden_size)
 
 
         timestamp = str(int(time.time()))
-        out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs", timestamp))
+        out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs_Han", p, timestamp))
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
         print("Writing to {}\n".format(out_dir))
 
         global_step = tf.Variable(0, trainable=False)
-        optimizer = tf.train.AdamOptimizer(FLAGS.learning_rate)
+        optimizer = tf.train.AdamOptimizer(learning_rate)
 
         #RNN中常用的梯度截断，防止出现梯度过大难以求导的现象
         tvars = tf.trainable_variables()
-        grads, _ = tf.clip_by_global_norm(tf.gradients(han.loss, tvars), FLAGS.grad_clip)
+        grads, _ = tf.clip_by_global_norm(tf.gradients(han.loss, tvars), grad_clip)
         grads_and_vars = tuple(zip(grads, tvars))
         train_op = optimizer.apply_gradients(grads_and_vars, global_step=global_step)
 
@@ -110,15 +146,14 @@ def train(train_file_path, dev_file_path, vocab_dic_path):
         train_summary_dir = os.path.join(out_dir, "summaries", "train")
         train_summary_writer = tf.summary.FileWriter(train_summary_dir, sess.graph)
 
-        dev_summary_op = tf.summary.merge([loss_summary, acc_summary])
         dev_summary_dir = os.path.join(out_dir, "summaries", "dev")
         dev_summary_writer = tf.summary.FileWriter(dev_summary_dir, sess.graph)
 
         checkpoint_dir = os.path.abspath(os.path.join(out_dir, "checkpoints"))
-        checkpoint_prefix = os.path.join(checkpoint_dir, "model")
+        checkpoint_prefix = os.path.join(checkpoint_dir, "model_Han", p)
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
-        saver = tf.train.Saver(tf.global_variables(), max_to_keep=FLAGS.num_checkpoints)
+        saver = tf.train.Saver(tf.global_variables(), max_to_keep=num_checkpoints)
 
 
         # Initialize all variables
@@ -128,48 +163,78 @@ def train(train_file_path, dev_file_path, vocab_dic_path):
             feed_dict = {
                 han.input_x: x_batch,
                 han.input_y: y_batch,
-                han.max_sentence_num: 30,
-                han.max_sentence_length: 30,
-                han.batch_size: 64
+                han.max_sentence_num: max_sentence_num,
+                han.max_sentence_length: max_sentence_length,
             }
             _, step, summaries, cost, accuracy = sess.run([train_op, global_step, train_summary_op, han.loss, han.acc],
                                                           feed_dict)
 
-            time_str = str(int(time.time()))
+            time_str = datetime.datetime.now().isoformat()
             print("{}: step {}, loss {:g}, acc {:g}".format(time_str, step, cost, accuracy))
             train_summary_writer.add_summary(summaries, step)
 
             return step
 
         def dev_step(x_batch, y_batch, writer=None):
-            feed_dict = {
-                han.input_x: x_batch,
-                han.input_y: y_batch,
-                han.max_sentence_num: 30,
-                han.max_sentence_length: 30,
-                han.batch_size: 64
-            }
-            step, summaries, cost, accuracy = sess.run([global_step, dev_summary_op, han.loss, han.acc], feed_dict)
-            time_str = str(int(time.time()))
-            print("++++++++++++++++++dev++++++++++++++{}: step {}, loss {:g}, acc {:g}".format(time_str, step, cost,
-                                                                                               accuracy))
+            data_size = len(x_batch)
+            batch_num = 1000
+            losses, accs = [], []
+            for batch_num in range(data_size // batch_num + 1):
+                start_index = batch_num * batch_size
+                end_index = min((batch_num + 1) * batch_size, data_size)
+
+                x = x_batch[start_index:end_index]
+                y = y_batch[start_index:end_index]
+
+                feed_dict = {
+                    han.input_x: x,
+                    han.input_y: y,
+                    han.max_sentence_num: max_sentence_num,
+                    han.max_sentence_length: max_sentence_length,
+                }
+                loss, accuracy = sess.run(
+                    [han.loss, han.acc],
+                    feed_dict)
+
+                losses.append(loss)
+                accs.append(accuracy)
+
+            val_loss = tf.reduce_mean(np.array(losses))
+            val_acc = tf.reduce_mean(np.array(accs))
+
+            val_loss_summary = tf.summary.scalar("loss", val_loss)
+            val_acc_summary = tf.summary.scalar("accuracy", val_acc)
+            dev_summary_op = tf.summary.merge([val_loss_summary, val_acc_summary])
+
+            step, summaries, loss, acc = sess.run([global_step, dev_summary_op, val_loss, val_acc])
+            time_str = datetime.datetime.now().isoformat()
+            print("   {}: step {}, loss {:g}, acc {:g}".format(time_str, step, loss, acc))
             if writer:
                 writer.add_summary(summaries, step)
 
-        batches = batch_iter(train_x, train_y, FLAGS.batch_size, FLAGS.num_epochs)
+            val_res['acc'].append(acc)
+            val_res['loss'].append(loss)
+
+
+        batches = batch_iter(train_x, train_y, batch_size, num_epochs)
 
         for x_batch, y_batch in batches:
             train_step(x_batch, y_batch)
             current_step = tf.train.global_step(sess, global_step)
-            if current_step % FLAGS.evaluate_every == 0:
-                print("\nEvaluation:")
+            if current_step % evaluate_every == 0:
+                print("\n-----------------\nEvaluation:\n-----------------")
                 dev_step(dev_x, dev_y, writer=dev_summary_writer)
                 print("")
-            if current_step % FLAGS.checkpoint_every == 0:
+            if current_step % checkpoint_every == 0:
                 path = saver.save(sess, checkpoint_prefix, global_step=current_step)
                 print("Saved model checkpoint to {}\n".format(path))
 
-        sess.close()
+
+    out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs_Han", p, timestamp))
+    with open(os.path.join(out_dir, 'val_res'), 'wb') as fp:
+        pickle.dump(val_res, fp)
+
+    print("finished !!!")
 
 
 def main(argv=None):
@@ -177,9 +242,9 @@ def main(argv=None):
         p = 'rough'
     else:
         p = 'rigour'
-    train_data_path = os.path.join(FLAGS.data_dir, p, 'train')
-    val_data_path = os.path.join(FLAGS.data_dir, p, 'val')
-    vacab_data_path = '../data/trainSet/vacab.dic'
+    train_data_path = os.path.join(data_dir, p, 'train')
+    val_data_path = os.path.join(data_dir, p, 'val')
+    vacab_data_path = '../data/trainSet/vocab.dic'
     train(train_data_path, val_data_path, vacab_data_path)
 
 
