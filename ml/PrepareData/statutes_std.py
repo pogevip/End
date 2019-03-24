@@ -43,7 +43,7 @@ def load_data():
     for cls, status in statutes_std.items():
         tmp = [(k, v) for k, v in dict(status).items()]
         tmp.sort(key=lambda x: x[1], reverse=True)
-        statutes_std[key] = tmp
+        statutes_std[cls] = tmp
 
     with open('data/statutes_count.pkl', 'wb') as fp:
         pickle.dump(statutes_std, fp)
@@ -98,22 +98,21 @@ class StatutesStd:
 
             if i % 100 == 0:
                 print(i)
-        print(len(self.corpus))
+        print("final statute num: ", len(self.corpus))
 
     def res(self):
         res = dict()
         for item in self.corpus:
             for key in item[1]:
                 res[key] = item[0]
+        return res
 
 
 
 def process_all_data(col = 'alldata'):
     from_col = conn['wangxiao'][col]
-    from_col.rename(col+'tmp')
-    from_col = conn['wangxiao'][col+'tmp']
 
-    out_col = conn['wangxiao']['alldata']
+    out_col = conn['wangxiao']['alldata_final']
 
     with open('data/statutes_std.pkl', 'rb') as fp:
         statutes_std = pickle.load(fp)
@@ -151,12 +150,10 @@ def process_all_data(col = 'alldata'):
 if __name__ == '__main__':
     res = dict()
     for cls, corpus in read_data('data/statutes_count.pkl'):
-        print(cls)
+        print("cls : ", cls)
         ss = StatutesStd(corpus)
         ss.std(alpha=0.85)
         r = ss.res()
         res[cls] = r
-
-
     with open('data/statutes_std.pkl', 'wb') as fp:
         pickle.dump(res, fp)

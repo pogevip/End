@@ -10,13 +10,14 @@ def load_data(path):
 
 class WordCounter:
     def __init__(self, data):
-        self.limit = len(data)*0.0001+1
+        self.limit = min(len(data)*0.0001+1, 50)
         self.data = data
 
     def __word_count(self):
         corpus = ' '.join(self.data)
         corpus = corpus.replace('。', ' ')
         word_counts = Counter(corpus.split(' ')).items()
+        print(len(word_counts))
         word_wrap = filter(lambda x: x[1]>=self.limit, word_counts)
         word_set = set([x[0] for x in word_wrap])
         print('word_set size: ', len(word_set))
@@ -41,6 +42,8 @@ def word_dict_gengrator(src_data, to_path):
 
     for cls, group in data.groupby('cls'):
         print(cls)
+        if str(cls) == '9103':
+            continue
         wc = WordCounter(group['token'].tolist())
 
         wc.gen_word_dict(os.path.join(to_path, str(cls)+'_dictionary.dic'))

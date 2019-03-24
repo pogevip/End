@@ -1,178 +1,176 @@
 import pickle
 import numpy as np
-import random
+import math
+import keras
 
 
-MAX_LEN = 400
-NUM_CLASS = 10
+MAX_LEN = 200
+CLASS_NUM = 10
 
 
-class DataHelper:
-    def __init__(self, data_path, weight_path):
-        self.data_path = data_path
-        self.weight_path = weight_path
+def load_data(path):
+    with open(path, 'rb') as fp:
+        data = pickle.load(fp)
+    return data
 
-    def __load_cls_weight(self):
-        with open(self.weight_path, 'rb') as fp:
-            dic = pickle.load(fp)
-        self.weight_dic = {item[0]: item[1] for _, item in dic.items()}
+def load_cls_weight(path):
+    with open(path, 'rb') as fp:
+        dic = pickle.load(fp)
+    weight_dic = [[item[0], item[1]] for _, item in dic.items()]
+    weight_dic.sort(key=lambda x:x[0])
+    weight = np.array([item[1] for item in weight_dic])
+    return weight
 
-    def __read_data(self):
-        with open(self.data_path, 'rb') as fp:
-            data = pickle.load(fp)
-        return data[0], data[1]
+def load_cls_dict(path):
+    with open(path, 'rb') as fp:
+        dic = pickle.load(fp)
+    weight_dic = [[item[0], cls] for cls, item in dic.items()]
+    weight_dic.sort(key=lambda x:x[0])
+    cls_list = [item[1] for item in weight_dic]
+    return cls_list
+
+
+class RandomSampleDataGenerator(keras.utils.Sequence):
+    def __init__(self, data, batch_size, shuffle=True):
+        self.batch_size = batch_size
+        self.data = data
+        self.indexes = np.arange(len(self.data['X']))
+        self.shuffle = shuffle
+
+    def __len__(self):
+        #计算每一个epoch的迭代次数
+        return math.ceil(len(self.data) / float(self.batch_size))
+
+    def __getitem__(self, index):
+        #生成每个batch数据，这里就根据自己对数据的读取方式进行发挥了
+        # 生成batch_size个索引
+        batch_indexs = self.indexes[int(index*self.batch_size) : int((index+1)*self.batch_size)]
+        # 根据索引获取datas集合中的数据
+        batch_data_x = [self.data['X'][k] for k in batch_indexs]
+        batch_data_y = [self.data['Y'][k] for k in batch_indexs]
+
+        # 生成数据
+        X, y = self.data_generation(batch_data_x, batch_data_y)
+        return X, y
+
+    def on_epoch_end(self):
+        #在每一次epoch结束是否需要进行一次随机，重新随机一下index
+        if self.shuffle == True:
+            np.random.shuffle(self.indexes)
 
     def __stuff_doc(self, doc):
-        def stuff_sent(sentence, max_length):
-            if len(sentence) > max_length:
-                start_index = (len(sentence) - max_length - 1) // 2 + 1
-                sentence = sentence[start_index: start_index + max_length]
-            else:
-                sentence.extend([0]*(max_length-len(sentence)))
-            return sentence
-
-        max_doc_length = MAX_LEN
-        doc = stuff_sent(doc, max_doc_length)
-        return doc
+        doc = doc * math.ceil(MAX_LEN/len(doc))
+        return doc[:MAX_LEN]
 
     def __gen_one_hot(self, label):
         label = np.array(label)
-        return (np.arange(NUM_CLASS)==label[:,None]).astype(np.int32)
+        return (np.arange(CLASS_NUM)==label[:,None]).astype(np.int32)
+
+    def data_generation(self, batch_data_x, batch_data_y):
+        train_x = np.array(list(map(lambda doc: self.__stuff_doc(doc), batch_data_x)))
+        train_y = self.__gen_one_hot(batch_data_y)
+
+        return train_x, train_y
+
+class StratifiedSampleDataGenerator(keras.utils.Sequence):
+    #对于数据分层采样，每个batch都按比例分布
+    def __init__(self, data, batch_prop, shuffle=True):
+        self.data = data
+        self.batch_prop = batch_prop
+        self.indexes = {cls :np.arange(len(d['X'])) for cls, d in data.items()}
+        self.shuffle = shuffle
+
+    def __len__(self):
+        #计算每一个epoch的迭代次数
+        return math.ceil(1 / self.batch_prop)
+
+    def __getitem__(self, index):
+        #生成每个batch数据，这里就根据自己对数据的读取方式进行发挥了
+        # 生成batch_size个索引
+        batch_data_x = []
+        batch_data_y = []
+        for cls, d in self.data.items():
+            batch_size = len(d['X']) * self.batch_prop
+            batch_indexs = self.indexes[cls][int(index * batch_size): int((index + 1) * batch_size)]
+
+            batch_data_x.extend([d['X'][k] for k in batch_indexs])
+            batch_data_y.extend([d['Y'][k] for k in batch_indexs])
+
+        # 生成数据
+        X, y = self.data_generation(batch_data_x, batch_data_y)
+
+        return X, y
+
+    def on_epoch_end(self):
+        #在每一次epoch结束是否需要进行一次随机，重新随机一下index
+        if self.shuffle == True:
+            for _, i in self.indexes.items():
+                np.random.shuffle(i)
+
+    def __stuff_doc(self, doc):
+        doc = doc * math.ceil(MAX_LEN/len(doc))
+        return doc[:MAX_LEN]
+
+    def __gen_one_hot(self, label):
+        label = np.array(label)
+        return (np.arange(CLASS_NUM)==label[:,None]).astype(np.int32)
+
+    def data_generation(self, batch_data_x, batch_data_y):
+        train_x = np.array(list(map(lambda doc: self.__stuff_doc(doc), batch_data_x)))
+        train_y = self.__gen_one_hot(batch_data_y)
+
+        return train_x, train_y
 
 
-    def batch_iter(self, x, y, batch_size, num_epochs, shuffle=True):
-        x, y = self.__read_data()
-        self.__load_cls_weight()
-
-        data_size = len(x)
-        num_batches_per_epoch = int((data_size - 1) / batch_size) + 1
-        for epoch in range(num_epochs):
-            if shuffle:
-                shuffle_indices = list(range(data_size))
-                random.shuffle(shuffle_indices)
-
-                shuffled_x = [x[i] for i in shuffle_indices]
-                shuffled_y = [y[i] for i in shuffle_indices]
-            else:
-                shuffled_x = x
-                shuffled_y = y
-
-            for batch_num in range(num_batches_per_epoch):
-                start_index = batch_num * batch_size
-                end_index = min((batch_num + 1) * batch_size, data_size)
-
-                train_x_tmp = shuffled_x[start_index:end_index]
-                train_y_tmp = shuffled_y[start_index:end_index]
-
-                train_x = np.array(list(map(lambda doc: self.__stuff_doc(doc), train_x_tmp)))
-                train_y = self.__gen_one_hot(train_y_tmp)
-                alpha = np.array(list(map(lambda label: self.weight_dic[label], train_y_tmp)))
-
-                yield train_x, train_y, alpha
-
-
-
-
-
-# def stuff_doc(doc, model_option, data_option):
-#     '''
-#     :param doc:
-#     :param model_option: 0-Han, 1-TextCnn
-#     :param data_option: 0-rough, 1-rigour
-#     :return:
-#     '''
+# def DataGenerator(data, batch, is_train_data, shuffle=True):
+#     def stuff_doc(doc):
+#         doc = doc * math.ceil(MAX_LEN/len(doc))
+#         return doc[:MAX_LEN]
 #
-#     def stuff_sent(sentence, max_length):
-#         if len(sentence) > max_length:
-#             start_index = (len(sentence) - max_length - 1) // 2 + 1
-#             sentence = sentence[start_index: start_index + max_length]
-#         else:
-#             sentence.extend([0] * (max_length - len(sentence)))
-#         return sentence
+#     def gen_one_hot(label):
+#         label = np.array(label)
+#         return (np.arange(CLASS_NUM)==label[:,None]).astype(np.int32)
 #
-#     if model_option == 0:
-#         if data_option == 0:
-#             max_sentence_num = MAX_SENT_NUM_ROUGH
-#             max_sentence_length = MAX_SENT_LEN_ROUGH
-#         elif data_option == 1:
-#             max_sentence_num = MAX_SENT_NUM_RIGOUR
-#             max_sentence_length = MAX_SENT_LEN_RIGOUR
-#         else:
-#             raise ValueError('Parameter error! : "data_option" must be 0 or 1')
+#     if is_train_data:
+#         indexes = {cls :np.arange(len(d['X'])) for cls, d in data.items()}
+#         num_batches_per_epoch = int(1 / batch)
 #
-#         if len(doc) > max_sentence_num:
-#             start_index = (len(doc) - max_sentence_num - 1) // 2 + 1
-#             doc = doc[start_index: start_index + max_sentence_num]
+#         while True:
+#             if shuffle:
+#                 for _, i in indexes.items():
+#                     np.random.shuffle(i)
 #
-#         doc = np.array(list(map(lambda sent: stuff_sent(sent, max_sentence_length), doc)))
-#         if len(doc) < max_sentence_num:
-#             doc = np.pad(doc, ((0, max_sentence_num - len(doc)), (0, 0)), 'constant')
-#         return doc
-#     elif model_option == 1:
-#         if data_option == 0:
-#             max_doc_length = MAX_DOC_LEN_ROUGH
-#         elif data_option == 1:
-#             max_doc_length = MAX_DOC_LEN_RIGOUR
-#         else:
-#             raise ValueError('Parameter error! : "data_option" must be 0 or 1')
-#         doc = stuff_sent(doc, max_doc_length)
-#         return doc
+#             for batch_index in range(int(num_batches_per_epoch)):
+#                 batch_data_x = []
+#                 batch_data_y = []
+#                 for cls, d in data.items():
+#                     batch_size = len(d['X'])*batch
+#                     batch_indexs = indexes[cls][batch_index * batch_size: (batch_index + 1) * batch_size]
+#
+#                     batch_data_x.extend([d['X'][k] for k in batch_indexs])
+#                     batch_data_y.extend([d['Y'][k] for k in batch_indexs])
+#
+#                 batch_data_x = np.array(list(map(lambda doc: stuff_doc(doc), batch_data_x)))
+#                 batch_data_y = gen_one_hot(batch_data_y)
+#
+#                 yield batch_data_x, batch_data_y
 #     else:
-#         raise ValueError('Parameter error! : "model_option" must be 0 or 1')
+#         indexes = np.arange(len(data['X']))
+#         batch_size = batch
+#         num_batches_per_epoch = math.ceil(len(data) / batch_size)
+#
+#         while True:
+#             if shuffle:
+#                 np.random.shuffle(indexes)
+#
+#             for batch_index in range(int(num_batches_per_epoch)):
+#                 batch_indexs = indexes[batch_index * batch_size: (batch_index + 1) * batch_size]
+#
+#                 batch_data_x = [data['X'][k] for k in batch_indexs]
+#                 batch_data_y = [data['Y'][k] for k in batch_indexs]
+#
+#                 batch_data_x = np.array(list(map(lambda doc: stuff_doc(doc), batch_data_x)))
+#                 batch_data_y = gen_one_hot(batch_data_y)
+#
+#                 yield batch_data_x, batch_data_y
 
-
-#Han
-# def decode_from_tfrecord(filename_queue):
-#     reader = tf.TFRecordReader()
-#     _, serialized_example = reader.read(filename_queue)  # 返回文件名和文件
-#     features = tf.parse_single_example(serialized_example,
-#                                        features={
-#                                            'label': tf.FixedLenFeature([], tf.int64),
-#                                            'input_raw': tf.FixedLenFeature([], tf.int64),
-#                                        })  # 取出包含input_raw和label的feature对象
-#     input_raw = tf.reshape(features['input_raw'], [max_sentence_num, max_sentence_length])
-#     label = features['label']
-#     return input_raw, label
-#
-#
-# def batch_reader(filenames, batch_size, thread_count, num_epochs=None):
-#     filename_queue = tf.train.string_input_producer(filenames, num_epochs=num_epochs, shuffle=True)
-#     input_raw, label = decode_from_tfrecord(filename_queue)
-#     min_after_dequeue = 1000
-#     capacity = min_after_dequeue + thread_count * batch_size
-#     x_batch, y_batch = tf.train.shuffle_batch([input_raw, label],
-#                                               batch_size=batch_size,
-#                                               capacity=capacity,
-#                                               min_after_dequeue=min_after_dequeue,
-#                                               num_threads=thread_count)
-#     y_batch = (np.arange(class_num) == y_batch[:, None]).astype(np.int32)
-#
-#     return x_batch, y_batch
-
-#TextCnn
-# def decode_from_tfrecord(filename_queue):
-#     reader = tf.TFRecordReader()
-#     _, serialized_example = reader.read(filename_queue)  # 返回文件名和文件
-#     features = tf.parse_single_example(serialized_example,
-#                                        features={
-#                                            'label': tf.FixedLenFeature([], tf.int64),
-#                                            'input_raw': tf.FixedLenFeature([], tf.int64),
-#                                        })  # 取出包含input_raw和label的feature对象
-#     input_raw = features['input_raw']
-#     label = features['label']
-#     return input_raw, label
-#
-#
-# def batch_reader(filenames, batch_size, thread_count, num_epochs=None):
-#     filename_queue = tf.train.string_input_producer(filenames, num_epochs=num_epochs, shuffle=True)
-#     input_raw, label = decode_from_tfrecord(filename_queue)
-#     min_after_dequeue = 1000
-#     capacity = min_after_dequeue + thread_count * batch_size
-#     x_batch, y_batch = tf.train.shuffle_batch([input_raw, label],
-#                                               batch_size=batch_size,
-#                                               capacity=capacity,
-#                                               min_after_dequeue=min_after_dequeue,
-#                                               num_threads=thread_count)
-#     y_batch = (np.arange(class_num) == y_batch[:, None]).astype(tf.int32)
-#
-#     return x_batch, y_batch

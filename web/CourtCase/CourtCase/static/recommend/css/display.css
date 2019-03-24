@@ -1,0 +1,17 @@
+#outer{
+	border: solid thin #AAAAAA;
+	margin-top: 50px;
+	background-color: #FFFFF0;
+}
+
+#title {
+	padding: 10px;
+}
+
+#tag{
+	padding: 0px 15px;
+}
+
+#tag >p {
+	color: #666666;
+}

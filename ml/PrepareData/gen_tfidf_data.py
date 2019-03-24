@@ -42,13 +42,14 @@ def read_data_from_dir(dir='data/trainSet/rank/tfidf/'):
 
     #     names = ['9001', '9012', '9047', '9130', '9299',
     #              '9461', '9483', '9542', '9705', '9771',]
-    names = ['9001', '9012', '9047', '9299',
-             '9461', '9483', '9542', '9705', '9771',]
+    names = ['9130']
 
     for name in names:
         print(name)
         with open(os.path.join(dir, name + '.pkl'), 'rb') as fp:
             data = pickle.load(fp)
+        print(len(data['id']), len(data['doc']))
+        print(data['doc'][0])
         yield name, data['id'], data['doc']
 
 
@@ -58,7 +59,7 @@ class TfIdfVec():
         self.docid_list = docid_list
         self.cls = cls
         self.col = db['tfidf_' + cls]
-        self.col.create_index([('word', ASCENDING)])
+#         self.col.create_index([('word', ASCENDING)])
         self.min_count = min_count
         self.num_limit = num_limit
         self.word_dict_path = word_dic_path
@@ -67,9 +68,9 @@ class TfIdfVec():
         if self.word_dict_path:
             with open(self.word_dict_path, 'rb') as fp:
                 word_dict = pickle.load(fp)
-            word_dict = {word:index-1 for word,index in word_dict.items()}
-            self.word_list = {index:word for word,index in word_dict.items()}
-            return word_dict
+            self.word_dict = {word:index-1 for word,index in word_dict.items()}
+            self.word_list = {index:word for word,index in self.word_dict.items()}
+            return
 
         corpus = ' '.join(self.corpus)
         word_counts = Counter(filter(lambda word: len(word) > 1, corpus.split(' '))).items()
@@ -77,26 +78,31 @@ class TfIdfVec():
         if self.min_count:
             word_counts_list = filter(lambda x: x[1] >= self.min_count, word_counts_list)
         else:
-            word_counts_list = word_counts_list[:len(word_counts_list) * 0.99]
+            word_counts_list = word_counts_list[:int(len(word_counts_list) * 0.999)]
         self.word_list = list(map(lambda x: x[0], word_counts_list))
-        word_dict = {word: index for index, word in enumerate(self.word_list)}
-        return word_dict
+        self.word_dict = {word: index for index, word in enumerate(self.word_list)}
 
     def fit(self):
-        word_dict = self.__word_count()
-        tfidfvector = TfidfVectorizer(vocabulary=word_dict)
+        print('train tfidf...')
+        tfidfvector = TfidfVectorizer(vocabulary=self.word_dict)
+        print(self.corpus[0])
         matrix = tfidfvector.fit_transform(self.corpus)
         print(len(tfidfvector.get_feature_names()))
         return matrix
 
     def save_db(self, matrix):
+        print(matrix)
         nonzero = matrix.nonzero()
+        print(nonzero[0][0])
+        print(nonzero[1][0])
+        print(matrix.data[0])
         dic = {
             'doc': nonzero[0],
             'word': nonzero[1],
             'tfidf': matrix.data,
         }
         df = pd.DataFrame(dic)
+        print(len(df))
         buffer = []
 
         for word_index, group in df.groupby('word'):
@@ -115,18 +121,26 @@ class TfIdfVec():
             buffer.clear()
 
     def run(self):
-        matrix = self.fit()
-        print(len(self.word_list))
-        self.save_db(matrix)
-        print(self.cls, ' finished!')
+        self.__word_count()
+#         matrix = self.fit()
+#         print(len(self.word_list))
+#         self.save_db(matrix)
+#         print(self.cls, ' finished!')
+        self.save_dict(os.path.join('../data/trainSet/rank/dict/', self.cls+'_dictionary.dic'))
+    
+    def save_dict(self, path):
+        word_dic = {word:index+1 for word, index in self.word_dict.items()}
+        with open(path, 'wb') as fp:
+            pickle.dump(word_dic, fp)
 
 
 if __name__ == '__main__':
-    trans_data_to_file(path='../data/data.csv', out_dir='../data/trainSet/rank/tfidf/')
+#     trans_data_to_file(path='../data/data.csv', out_dir='../data/trainSet/rank/tfidf/')
 
     for cls, docid_list, corpus in read_data_from_dir(dir='../data/trainSet/rank/tfidf/'):
-        tiv = TfIdfVec(corpus, docid_list, cls, min_count=30, word_dic_path=os.path.join('../data/trainSet/rank/dict/', cls+'_dictionary.dic'))
-        tiv.run()
+#         tiv = TfIdfVec(corpus, docid_list, cls, min_count=30, word_dic_path=os.path.join('../data/trainSet/rank/dict/', cls+'_dictionary.dic'))
+        tiv = TfIdfVec(corpus, docid_list, cls, min_count=30)
+        tiv.run() 
 
     print('Finished!')
 
