@@ -1,0 +1,8 @@
+nohup: ignoring input
+------9001------
+Traceback (most recent call last):
+  File "compute_sim.py", line 97, in <module>
+    out_path=os.path.join(out_data_dir, cls+'.csv'),)
+  File "compute_sim.py", line 54, in com_sim
+    with open(statutes_weight_path, 'rb') as fp:
+FileNotFoundError: [Errno 2] No such file or directory: '../data/trainSet/rank/search_res_web/9001_weight.pkl'

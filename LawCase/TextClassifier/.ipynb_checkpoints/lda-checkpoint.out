@@ -1,0 +1,15 @@
+nohup: ignoring input
+Traceback (most recent call last):
+  File "gen_lda_data.py", line 114, in <module>
+    lda_data = gen_lda_data(src_path, out_path)
+  File "gen_lda_data.py", line 21, in gen_lda_data
+    data = data.groupby('query').apply(sample)
+  File "/usr/local/lib/python3.5/dist-packages/pandas/core/generic.py", line 6665, in groupby
+    observed=observed, **kwargs)
+  File "/usr/local/lib/python3.5/dist-packages/pandas/core/groupby/groupby.py", line 2152, in groupby
+    return klass(obj, by, **kwds)
+  File "/usr/local/lib/python3.5/dist-packages/pandas/core/groupby/groupby.py", line 599, in __init__
+    mutated=self.mutated)
+  File "/usr/local/lib/python3.5/dist-packages/pandas/core/groupby/groupby.py", line 3291, in _get_grouper
+    raise KeyError(gpr)
+KeyError: 'query'

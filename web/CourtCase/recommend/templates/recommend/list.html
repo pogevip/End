@@ -7,66 +7,40 @@
 {% endblock %}
 
 {% block mainbody %}
-<div class="container">	
-	<div class="row" id="search-bar" style="width: 100%">
-		<div class="col-md-10 col-md-offset-1">
-			<form class="input-group col-xs-10 col-md-offset-1"  action="{% url 'recommend:search_list' %}" method="get">
-				{% csrf_token %}
-				<div class="input-group">
-					<input type="text" class="form-control" id="search-bar-input" name="key" placeholder="输入文章名关键字..." value="{{ query }}">
-					<span class="input-group-btn">
-						<button class="btn btn-default" id="search-bar-submit" type="submit">查找</button>
-					</span>
-				</div>
-				<div class="form-group">
-					<div class="checkbox">
-						{% for op in tactics_option %}
-						{% ifequal op option %}
-						<label class="radio-inline">
-						  <input type="radio" name="option" value="{{ op }}" checked> {{ op }}
-						</label>
-						{% else %}
-						<label class="radio-inline">
-						  <input type="radio" name="option" value="{{ op }}"> {{ op }}
-						</label>
-						{% endifequal %}
-						{% endfor %}
-					</div>
-				</div>
-    		</form>
-		</div>
-	</div>
-
 <div class="row" id="container">
-	<div class=" col-md-3">
-		<div class="" style="height: 1000px;">
-			<div>
-				<h3>筛选策略</h3>
-				<ul>
-					
-				</ul>
+	<div class=" col-md-3" style="padding-top:0px">
+		<div class="" style="margin-top:0px; padding-bottom:20px; background-color:#ffffff">
+			<div style="height:70px; padding:5px 25px;">
+				<h3>适用法条预测</h3>
 			</div>
+			<ul>
+				{% for statute in statutes %}
+				<li>
+					<p>{{statute}}</p>
+				</li>
+				{% endfor %}
+			</ul>
 		</div>
 	</div>
 
 	<div class="col-md-9 row" id="list">
 		{% for case in cases %}
-		<div class="col-xs-12">
+		<div class="col-xs-12" id="each_li">
 			<div class="row">
 				<div class="col-xs-12 title">
-					<h1><a href="{% url 'recommend:recommend_display' case.id %}" style="font-size: 20px">{{ case.title }}</a></h1>
+					<h1 style="padding: 0px"><a href="{% url 'recommend:recommend_display' case.id %}">{{ case.title }}</a></h1>
 				</div>
 				<div class="col-xs-12 desc">
-					<p>最终判决法院&nbsp;&nbsp;&nbsp;发生地&nbsp;&nbsp;时间 </p>
+					<p>{{case.court}}&nbsp;&nbsp;&nbsp;{{case.time}}</p>
 				</div>
 				<div class="col-xs-12 summary">
-					<p>summary</p>
+					<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>&nbsp;&nbsp;{{ case.keywords }}
 				</div>
-				<div class="col-xs-3">
-					<a href=""><span class="glyphicon glyphicon-tag" aria-hidden="true"></span>&nbsp;b.tag</a>
+				<div class="col-xs-3" style="color:#1b6ac2; margin-top:5px">
+					<span class="glyphicon glyphicon-tag" aria-hidden="true"></span>&nbsp;{{case.causeOfAction}}
 				</div>
 				<div class="col-xs-3 col-md-offset-6 link">
-					<a class="btn btn-block btn-default" role="button" href="{% url 'recommend:recommend_display' case.id %}">详情<span class="glyphicon glyphicon-menu-right" style=""></span></a>
+					<a class="btn btn-link" role="button" href="{% url 'recommend:recommend_display' case.id %}">详情<span class="glyphicon glyphicon-menu-right" style=""></span></a>
 				</div>
 			</div>
 		</div>

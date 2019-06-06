@@ -1,0 +1,19 @@
+nohup: ignoring input
+Traceback (most recent call last):
+  File "gen_rank_train_data.py", line 119, in <module>
+    rtd = RankTrainDataGen(cls, os.path.join('../data/trainSet/rank/each_cls_data_web', cls+'.csv'), logger)
+  File "gen_rank_train_data.py", line 33, in __init__
+    self.data = pd.read_csv(data_path)
+  File "/usr/local/lib/python3.5/dist-packages/pandas/io/parsers.py", line 678, in parser_f
+    return _read(filepath_or_buffer, kwds)
+  File "/usr/local/lib/python3.5/dist-packages/pandas/io/parsers.py", line 440, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/usr/local/lib/python3.5/dist-packages/pandas/io/parsers.py", line 787, in __init__
+    self._make_engine(self.engine)
+  File "/usr/local/lib/python3.5/dist-packages/pandas/io/parsers.py", line 1014, in _make_engine
+    self._engine = CParserWrapper(self.f, **self.options)
+  File "/usr/local/lib/python3.5/dist-packages/pandas/io/parsers.py", line 1708, in __init__
+    self._reader = parsers.TextReader(src, **kwds)
+  File "pandas/_libs/parsers.pyx", line 384, in pandas._libs.parsers.TextReader.__cinit__
+  File "pandas/_libs/parsers.pyx", line 695, in pandas._libs.parsers.TextReader._setup_parser_source
+FileNotFoundError: File b'../data/trainSet/rank/each_cls_data_web/9047.csv' does not exist

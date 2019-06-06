@@ -13,8 +13,8 @@
 
 #search-bar-submit {
 	height: 60px;
-	width: 100px;
-	background-color: #DEB887;
+	width: 80px;
+	background-color: #1874CD;
 	font-size: 20px;
 }
 
@@ -25,15 +25,20 @@
 #list{
 	border-bottom: solid thin #AAAAAA;
 	margin-bottom: 20px;
-	padding-bottom: 10px;
+}
+
+#each_li{
+	margin-bottom:20px;
+	background-color: #ffffff;
 }
 
 .title{
-	padding: 10px;
+	padding: 0px 10px;
 }
 
 .title >h1 > a {
-	font-size: 20px;
+	font-family: Microsoft YaHei;
+	font-size: 25px;
 	color: #444444;
 }
 
@@ -47,7 +52,6 @@
 
 .link >a {
 	width: 100px;
-	background-color: #F5DEB3;
 }
 
 .link >a >span{

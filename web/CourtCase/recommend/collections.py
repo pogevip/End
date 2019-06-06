@@ -5,9 +5,9 @@ from collections import defaultdict
 
 
 
-class indexTable:
+class indexCol:
     def __init__(self, cls):
-        self.col = settings.DB_CON['wangxiao']['tfidf_'+str(cls)]
+        self.col = settings.CONN['wangxiao']['tfidf_'+str(cls)]
 
     def find(self, word_list):
         tmp = defaultdict(lambda: 0)
@@ -21,25 +21,26 @@ class indexTable:
         tmp.sort(key=lambda x: x[1], reverse=True)
         tmp = tmp[:100]
 
-        return [i[0] for i in tmp]
+        return tmp
 
 
-class CaseToken:
+class CaseTokenCol:
     def __init__(self):
-        self.col = settings.DB_CON['wangxiao']['alldata_final']
-
-    def getToken(self, id_list):
-        res = []
-        for id in id_list:
-            item = self.col.find_one({"fullTextId" : id})
-            res.append([id, item['token_cleaned']])
-        return res
-
-
-class AllInfo:
-    def __init__(self):
-        self.col = settings.DB_CON['lawCase']['lawcase']
+        self.col = settings.CONN['wangxiao']['alldata_final']
 
     def getInfo(self, id):
+        item = self.col.find_one({"fullTextId" : id})
+        return item
+
+
+class AllInfoCol:
+    def __init__(self):
+        self.col = settings.CONN['lawCase']['lawcase']
+
+    def getSummary(self, id):
         item = self.col.find_one({"_id" : ObjectId(id)})
         return item['text']
+
+    def getAllInfo(self, id):
+        item = self.col.find_one({"_id": ObjectId(id)})
+        return item

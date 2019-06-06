@@ -11,9 +11,12 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-from gensim import models, corpora
-import  pymongo
+from pymongo import MongoClient
 from keras.models import load_model
+import keras.backend as K
+import pickle
+import numpy as np
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -128,15 +131,88 @@ STATICFILES_DIRS = (
     'recommend/static/',
 )
 
-# LDA模型
-LDA_MODEL = models.LdaModel.load(os.path.join(BASE_DIR, 'recommend/model/lda.model'))
-TEXT2VEC = corpora.Dictionary.load(os.path.join(BASE_DIR, 'recommend/model/lda.dct'))
 
 
-# mongo数据库
-DB_HOST = '172.19.241.248'
-DB_PORT = 20000
-# DB_HOST = 'localhost'
-# DB_PORT = 27017
+#载入停用词词典
+def load_stop_words(path = 'data/stopWords.txt'):
+    stw = []
+    with open(path, 'r') as fp:
+        for line in fp:
+            stw.append(line.strip())
+    return stw
 
-DB_CON = pymongo.MongoClient(DB_HOST, DB_PORT)
+# STWS = load_stop_words(os.path.join(BASE_DIR, 'recommend/model/', 'stopwords.txt'))
+# STFS = ['b', 'c', 'e', 'g', 'h', 'k', 'l',
+#               'o', 's', 'u', 'w', 'x', 'y', 'z',
+#               'un', 'nr', 'f', 'i', 'm', 'p',
+#               'q', 'r', 'tg', 't']
+
+STWS = None
+STFS = None
+
+MAX_LEN = 200
+
+#载入案由预测过程词典
+def load_dict(path):
+    with open(path, 'rb') as fp:
+        dic = pickle.load(fp)
+    return dic
+# WordDicCls = load_dict(os.path.join(BASE_DIR, 'recommend/model/', 'cls_dictionary.dic'))
+WordDicCls = None
+
+#载入打分过程词典
+# WordDicRank = load_dict(os.path.join(BASE_DIR, 'recommend/model/', rank_dictionary.dic'))
+WordDicRank = None
+
+#载入案由预测模型
+def load_case_reason_model(model_path, cls_dict_path):
+    def load_cls_weight(path):
+        with open(path, 'rb') as fp:
+            dic = pickle.load(fp)
+        weight_dic = [[item[0], item[1]] for _, item in dic.items()]
+        weight_dic.sort(key=lambda x:x[0])
+        weight = np.array([item[1] for item in weight_dic])
+        return weight
+    cls_weight = load_cls_weight(cls_dict_path)
+    def my_loss(y_true, y_pred):
+        gamma = 2
+        alpha = np.max(y_true * cls_weight, axis=-1)
+        tmp = np.max(y_true * y_pred, axis=-1)
+        return -K.mean(alpha * K.pow(1. - tmp, gamma) * K.log(K.clip(tmp, 1e-8, 1.0)))
+
+    def my_metric(y_true, y_pred):
+        predictions = K.argmax(y_pred)
+        correct_predictions = K.equal(predictions, K.argmax(y_true))
+        return K.mean(K.cast(correct_predictions, "float"))
+
+    model = load_model(model_path, {'my_loss': my_loss, 'my_metric': my_metric})
+    return model
+# CaseReasonModel = load_case_reason_model(
+#     model_path = os.path.join(BASE_DIR, 'recommend/model/', 'cr_model.h5'),
+#     cls_dict_path = os.path.join(BASE_DIR, 'recommend/model/', 'cls_5w.dic')
+# )
+CaseReasonModel = None
+
+#载入案由映射词典
+def load_cls_dict(path):
+    with open(path, 'rb') as fp:
+        dic = pickle.load(fp)
+    weight_dic = [[item[0], cls] for cls, item in dic.items()]
+    weight_dic.sort(key=lambda x:x[0])
+    cls_list = [item[1] for item in weight_dic]
+    return cls_list
+# ClsDict = load_cls_dict(os.path.join(BASE_DIR, 'recommend/model/', 'cls_5w.dic'))
+ClsDict = None
+
+#载入各类别内部重排序模型
+def load_rank_model(model_path):
+    def my_loss(y_true, y_pred):
+        return K.mean(K.pow(K.log(y_pred+1)-K.log(y_true+1), 2))
+    model = load_model(model_path, {'my_loss': my_loss})
+    return model
+# RankModel = load_rank_model(os.path.join(BASE_DIR, 'recommend/model/', 'rank_model.h5'))
+RankModel = None
+
+#数据库
+# CONN = MongoClient('172.19.241.248', 20000)
+# CONN = None

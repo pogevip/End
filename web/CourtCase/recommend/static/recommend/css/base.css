@@ -2,23 +2,23 @@ body {
 	font-family: Microsoft YaHei;
 	background-position: 0 0;
 	background-size: 100% 600px;
-	background-color: #F5DEB3;
 }
 
 header {
-	background-color: red;
+	background-color: #1664ac;
 	width: 100%;
-	height: 100px;
+	height: 60px;
 }
 
 #mainbody{
 	width: 100%;
 	min-height: 800px;
+	background-color: #eaeaea;
 }
 
 footer {
 	text-align: center;
-	background-color: #8B0000;
+	background-color: #bfd0d0;
 	width: 100%;
 	height: 100px;
 }

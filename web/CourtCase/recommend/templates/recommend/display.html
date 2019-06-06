@@ -1,4 +1,5 @@
 {%  extends "recommend/base.html" %}
+{% load string_filter %}
 
 {% load static %}
 
@@ -14,13 +15,10 @@
 					<h1>{{ case.title }}</h1>
 				</div>
 				<div id="tag">
-					<p>BY&nbsp;&nbsp; blog.author &nbsp;&nbsp;&nbsp;点击&nbsp;&nbsp; blog.clickTimes </p>
+					<p>{{ case.file }}</p>
 				</div>
-				<div id="case-pass">
-					{{ case.content }}
-				</div>
-				<div id="result">
-					result
+				<div id="info">
+					{{ case.content|linebreaksbr}}
 				</div>
 			</div>
 		</div>
